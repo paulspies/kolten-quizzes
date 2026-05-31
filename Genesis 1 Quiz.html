@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✈️ Mission Intel — Genesis 1</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0d1117;color:#e6edf3;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:30px 20px}
+  .header{text-align:center;margin-bottom:36px}
+  .header h1{font-size:1.8rem;color:#58a6ff;letter-spacing:2px;text-transform:uppercase}
+  .header p{color:#8b949e;margin-top:8px;font-size:.95rem}
+  .badge{display:inline-block;background:#1f2d3d;border:1px solid #30363d;border-radius:20px;padding:4px 14px;font-size:.8rem;color:#58a6ff;margin-top:10px;letter-spacing:1px}
+  .question-card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;margin-bottom:20px;transition:border-color .2s}
+  .question-card.correct{border-color:#3fb950}.question-card.wrong{border-color:#f85149}
+  .question-number{font-size:.75rem;color:#58a6ff;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .question-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:18px}
+  .question-text{font-size:1.05rem;line-height:1.6;color:#e6edf3;flex:1}
+  .hint-btn{background:#1f2d3d;border:1px solid #58a6ff;color:#58a6ff;border-radius:50%;width:26px;height:26px;font-size:.8rem;font-weight:bold;cursor:pointer;flex-shrink:0;margin-top:2px;transition:background .15s;display:flex;align-items:center;justify-content:center}
+  .hint-btn:hover{background:#253142}.hint-btn.used{border-color:#d29922;color:#d29922}
+  .hint-box{background:#1c2a1a;border:1px solid #d29922;border-radius:8px;padding:10px 14px;font-size:.88rem;color:#d29922;margin-bottom:14px;display:none}
+  .hint-box.visible{display:block}
+  .options{display:flex;flex-direction:column;gap:10px}
+  .option{background:#1f2d3d;border:1px solid #30363d;border-radius:8px;padding:12px 16px;cursor:pointer;font-size:.95rem;color:#c9d1d9;transition:background .15s,border-color .15s,transform .1s;display:flex;align-items:center;gap:12px}
+  .option:hover:not(.disabled){background:#253142;border-color:#58a6ff;transform:translateX(4px)}
+  .option .letter{background:#0d1117;border:1px solid #30363d;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:bold;flex-shrink:0;color:#58a6ff}
+  .option.selected-correct{background:#1a3a2a;border-color:#3fb950;color:#3fb950}
+  .option.selected-correct .letter{border-color:#3fb950;color:#3fb950}
+  .option.selected-wrong{background:#3a1a1a;border-color:#f85149;color:#f85149}
+  .option.selected-wrong .letter{border-color:#f85149;color:#f85149}
+  .option.show-correct{background:#1a3a2a;border-color:#3fb950;color:#3fb950;opacity:.7}
+  .option.show-correct .letter{border-color:#3fb950;color:#3fb950}
+  .option.disabled{cursor:default}
+  .feedback{margin-top:14px;padding:10px 14px;border-radius:8px;font-size:.9rem;display:none}
+  .feedback.correct{background:#1a3a2a;border:1px solid #3fb950;color:#3fb950;display:block}
+  .feedback.wrong{background:#3a1a1a;border:1px solid #f85149;color:#f85149;display:block}
+  .result-box{background:#161b22;border:2px solid #58a6ff;border-radius:16px;padding:36px;text-align:center;margin-top:30px;display:none}
+  .result-box h2{font-size:1.6rem;color:#58a6ff;margin-bottom:10px}
+  .result-score{font-size:3.5rem;font-weight:bold;margin:16px 0}
+  .result-rank{font-size:1.1rem;color:#8b949e;margin-bottom:24px}
+  .rank-badge{display:inline-block;background:#1f2d3d;border:1px solid #58a6ff;border-radius:12px;padding:8px 20px;font-size:1rem;color:#58a6ff;margin-bottom:24px}
+  .retry-btn{background:#58a6ff;color:#0d1117;border:none;border-radius:8px;padding:12px 32px;font-size:1rem;font-weight:bold;cursor:pointer;letter-spacing:1px;transition:background .2s}
+  .retry-btn:hover{background:#79bbff}
+  .progress-bar-wrap{background:#1f2d3d;border-radius:20px;height:6px;margin-bottom:32px;overflow:hidden}
+  .progress-bar{height:100%;background:#58a6ff;border-radius:20px;width:0%;transition:width .4s ease}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>✈️ Mission Intel</h1>
+  <p>Genesis 1 — The Creation Account</p>
+  <div class="badge">GENESIS 1:1-31 · 12 QUESTIONS · CADET LEVEL</div>
+</div>
+<div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+<div id="quiz"></div>
+<div class="result-box" id="resultBox">
+  <h2>✈️ Debrief Complete</h2>
+  <div class="result-score" id="resultScore"></div>
+  <div class="result-rank" id="resultRank"></div>
+  <div class="rank-badge" id="rankBadge"></div><br>
+  <button class="retry-btn" onclick="resetQuiz()">🔄 Fly Again</button>
+</div>
+<script>
+const questions=[
+  {
+    question:"What does Genesis 1:1 say God created 'in the beginning'?",
+    options:["The earth and all its creatures","The heavens and the earth","Light and darkness","Man and woman"],
+    answer:1,
+    hint:"The very first verse of the entire Bible tells you exactly what God made first.",
+    feedback:"'In the beginning, God created the heavens and the earth.' This is the opening statement of all Scripture and the starting point of all creation. (Genesis 1:1)"
+  },
+  {
+    question:"What was the earth like before God began creating?",
+    options:["Covered in ice","A beautiful garden","Formless, empty, and dark","Full of animals and plants"],
+    answer:2,
+    hint:"Genesis 1:2 uses two words to describe the earth — one means no shape, the other means nothing in it.",
+    feedback:"The earth was formless and empty (void), with darkness over the surface of the deep. The Spirit of God was hovering over the waters. (Genesis 1:2)"
+  },
+  {
+    question:"What were the first words God spoke to begin creation?",
+    options:["Let there be land","Let the waters separate","Let us make man","Let there be light"],
+    answer:3,
+    hint:"This was the very first thing God commanded into existence on Day 1.",
+    feedback:"God said 'Let there be light' — and there was light. This was the first spoken act of creation. God separated the light from the darkness and called them Day and Night. (Genesis 1:3-5)"
+  },
+  {
+    question:"What did God create on Day 2?",
+    options:["The sun and moon","Land and seas","Birds and fish","An expanse to separate the waters above and below"],
+    answer:3,
+    hint:"Day 2 involved separating water — but not making land yet. Think sky.",
+    feedback:"God made an expanse (sky) that separated the waters above from the waters below. He called it 'sky.' Day 2 is also the only day God does not say 'it was good.' (Genesis 1:6-8)"
+  },
+  {
+    question:"What two things were created on Day 3?",
+    options:["Sun and stars","Birds and plants","Animals and man","Dry land and vegetation"],
+    answer:3,
+    hint:"Day 3 gave us both geography and the first living things. Think land and plants.",
+    feedback:"God gathered the waters to form seas and let dry land appear. He also created vegetation — seed-bearing plants and fruit trees. Day 3 got two 'it was good' statements. (Genesis 1:9-13)"
+  },
+  {
+    question:"What was the purpose of the lights God created on Day 4?",
+    options:["To replace darkness permanently","To guide the animals at night","To mark seasons, days, and years and give light on the earth","To show man the way to God"],
+    answer:2,
+    hint:"God gave these lights two main purposes — one was timekeeping, one was giving light.",
+    feedback:"God created the sun, moon, and stars on Day 4 to serve as signs to mark seasons, days, and years, and to give light on the earth. The greater light rules the day, the lesser light rules the night. (Genesis 1:14-19)"
+  },
+  {
+    question:"What filled the waters and the sky on Day 5?",
+    options:["Wind and clouds","Angels and spirits","Plants and coral","Sea creatures and birds"],
+    answer:3,
+    hint:"Day 5 filled two empty spaces — one above and one below.",
+    feedback:"On Day 5 God created every living creature in the sea and every bird in the sky. He blessed them and told them to be fruitful and multiply. (Genesis 1:20-23)"
+  },
+  {
+    question:"What was created on Day 6 alongside the land animals?",
+    options:["Fish and birds","The sun and moon","Man, made in God's image","The seas and dry land"],
+    answer:2,
+    hint:"Day 6 had two parts — animals first, then something — or someone — very special.",
+    feedback:"After creating land animals, God said 'Let us make man in our image.' Man was the last and greatest creation on Day 6, made in God's own image. (Genesis 1:24-27)"
+  },
+  {
+    question:"What makes man different from all the animals God created?",
+    options:["Man was created first","Man was given wings","Man was made in God's image","Man was made from water"],
+    answer:2,
+    hint:"There is a specific phrase used only for man — 'in our...'",
+    feedback:"God said 'Let us make man in our image, after our likeness.' Man alone was made in God's image. This sets humans apart from every other creature God made. (Genesis 1:26-27)"
+  },
+  {
+    question:"What did God command man to do after creating him?",
+    options:["Build a city and name it","Stay in one place and rest","Find food for all the animals","Be fruitful, multiply, and have dominion over creation"],
+    answer:3,
+    hint:"God gave man both a blessing and a responsibility. Think about filling the earth and ruling over it.",
+    feedback:"God told man to be fruitful and multiply, fill the earth and subdue it, and have dominion over the fish, birds, and every living thing on earth. (Genesis 1:28)"
+  },
+  {
+    question:"What food did God give to humans in the beginning?",
+    options:["Fish and meat","Honey and grain","Every seed-bearing plant and fruit tree","Only the fruit of one tree"],
+    answer:2,
+    hint:"God's original food plan for man came from plants — think seeds and fruit.",
+    feedback:"God gave man every plant yielding seed and every tree with fruit for food. He also gave green plants to the animals. This was the original diet before the fall. (Genesis 1:29-30)"
+  },
+  {
+    question:"How did God describe everything He had made at the very end of Day 6?",
+    options:["Good","Perfect and holy","Excellent","Very good"],
+    answer:3,
+    hint:"On Day 6 God used a stronger word than He had used on the other days.",
+    feedback:"After creating man and seeing all that He had made, God called it 'very good.' Other days were called 'good' — but the completed creation with man in it was 'very good.' (Genesis 1:31)"
+  }
+];
+const letters=['A','B','C','D'];
+let answered=0,score=0;
+function buildQuiz(){
+  const c=document.getElementById('quiz');c.innerHTML='';answered=0;score=0;updateProgress();
+  questions.forEach((q,qi)=>{
+    const card=document.createElement('div');card.className='question-card';card.id=`card-${qi}`;
+    card.innerHTML=`<div class="question-number">Question ${qi+1} of ${questions.length}</div>
+      <div class="question-header"><div class="question-text">${q.question}</div>
+      <button class="hint-btn" id="hint-btn-${qi}" onclick="toggleHint(${qi})" title="Need a hint?">?</button></div>
+      <div class="hint-box" id="hint-${qi}">💡 Hint: ${q.hint}</div>
+      <div class="options" id="options-${qi}">${q.options.map((o,oi)=>`
+        <div class="option" id="opt-${qi}-${oi}" onclick="selectAnswer(${qi},${oi})">
+          <span class="letter">${letters[oi]}</span><span>${o}</span></div>`).join('')}</div>
+      <div class="feedback" id="feedback-${qi}"></div>`;
+    c.appendChild(card);
+  });
+  document.getElementById('resultBox').style.display='none';
+}
+function toggleHint(qi){
+  document.getElementById(`hint-${qi}`).classList.toggle('visible');
+  document.getElementById(`hint-btn-${qi}`).classList.toggle('used',document.getElementById(`hint-${qi}`).classList.contains('visible'));
+}
+function selectAnswer(qi,selected){
+  const q=questions[qi];
+  document.getElementById(`options-${qi}`).querySelectorAll('.option').forEach(o=>o.classList.add('disabled'));
+  const correct=q.answer===selected;if(correct)score++;
+  document.getElementById(`opt-${qi}-${selected}`).classList.add(correct?'selected-correct':'selected-wrong');
+  if(!correct)document.getElementById(`opt-${qi}-${q.answer}`).classList.add('show-correct');
+  document.getElementById(`card-${qi}`).classList.add(correct?'correct':'wrong');
+  const f=document.getElementById(`feedback-${qi}`);
+  f.className=`feedback ${correct?'correct':'wrong'}`;
+  f.innerHTML=correct?`✅ Correct! ${q.feedback}`:`❌ Not quite. ${q.feedback}`;
+  answered++;updateProgress();
+  if(answered===questions.length)setTimeout(showResult,800);
+}
+function updateProgress(){document.getElementById('progressBar').style.width=(answered/questions.length*100)+'%'}
+function showResult(){
+  const pct=Math.round(score/questions.length*100);
+  let rank,icon;
+  if(pct>=90){rank="Pilot — Mastered!";icon="🦅 Pilot"}
+  else if(pct>=76){rank="Officer — Strong!";icon="🎖️ Officer"}
+  else if(pct>=61){rank="Airman — Solid!";icon="🌟 Airman"}
+  else if(pct>=41){rank="Cadet — Getting it!";icon="✈️ Cadet"}
+  else{rank="Recruit — Keep going!";icon="🪖 Recruit"}
+  document.getElementById('resultScore').textContent=`${score} / ${questions.length} · ${pct}%`;
+  document.getElementById('resultScore').style.color=pct>=70?'#3fb950':pct>=50?'#d29922':'#f85149';
+  document.getElementById('resultRank').textContent=rank;document.getElementById('rankBadge').textContent=icon;
+  const r=document.getElementById('resultBox');r.style.display='block';r.scrollIntoView({behavior:'smooth'});
+}
+function resetQuiz(){buildQuiz();window.scrollTo({top:0,behavior:'smooth'})}
+buildQuiz();
+</script>
+</body>
+</html>
