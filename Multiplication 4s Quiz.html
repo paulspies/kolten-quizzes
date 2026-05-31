@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✈️ Speed Drill — 4s Multiplication</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0d1117;color:#e6edf3;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:30px 20px}
+  .header{text-align:center;margin-bottom:36px}
+  .header h1{font-size:1.8rem;color:#58a6ff;letter-spacing:2px;text-transform:uppercase}
+  .header p{color:#8b949e;margin-top:8px;font-size:.95rem}
+  .badge{display:inline-block;background:#1f2d3d;border:1px solid #30363d;border-radius:20px;padding:4px 14px;font-size:.8rem;color:#58a6ff;margin-top:10px;letter-spacing:1px}
+  .question-card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;margin-bottom:20px;transition:border-color .2s}
+  .question-card.correct{border-color:#3fb950}.question-card.wrong{border-color:#f85149}
+  .question-number{font-size:.75rem;color:#58a6ff;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .question-text{font-size:1.3rem;line-height:1.6;color:#e6edf3;margin-bottom:18px;font-weight:bold}
+  .options{display:flex;flex-direction:column;gap:10px}
+  .option{background:#1f2d3d;border:1px solid #30363d;border-radius:8px;padding:12px 16px;cursor:pointer;font-size:.95rem;color:#c9d1d9;transition:background .15s,border-color .15s,transform .1s;display:flex;align-items:center;gap:12px}
+  .option:hover:not(.disabled){background:#253142;border-color:#58a6ff;transform:translateX(4px)}
+  .option .letter{background:#0d1117;border:1px solid #30363d;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:bold;flex-shrink:0;color:#58a6ff}
+  .option.selected-correct{background:#1a3a2a;border-color:#3fb950;color:#3fb950}
+  .option.selected-correct .letter{border-color:#3fb950;color:#3fb950}
+  .option.selected-wrong{background:#3a1a1a;border-color:#f85149;color:#f85149}
+  .option.selected-wrong .letter{border-color:#f85149;color:#f85149}
+  .option.show-correct{background:#1a3a2a;border-color:#3fb950;color:#3fb950;opacity:.7}
+  .option.show-correct .letter{border-color:#3fb950;color:#3fb950}
+  .option.disabled{cursor:default}
+  .feedback{margin-top:14px;padding:10px 14px;border-radius:8px;font-size:.9rem;display:none}
+  .feedback.correct{background:#1a3a2a;border:1px solid #3fb950;color:#3fb950;display:block}
+  .feedback.wrong{background:#3a1a1a;border:1px solid #f85149;color:#f85149;display:block}
+  .result-box{background:#161b22;border:2px solid #58a6ff;border-radius:16px;padding:36px;text-align:center;margin-top:30px;display:none}
+  .result-box h2{font-size:1.6rem;color:#58a6ff;margin-bottom:10px}
+  .result-score{font-size:3.5rem;font-weight:bold;margin:16px 0}
+  .result-rank{font-size:1.1rem;color:#8b949e;margin-bottom:24px}
+  .rank-badge{display:inline-block;background:#1f2d3d;border:1px solid #58a6ff;border-radius:12px;padding:8px 20px;font-size:1rem;color:#58a6ff;margin-bottom:24px}
+  .retry-btn{background:#58a6ff;color:#0d1117;border:none;border-radius:8px;padding:12px 32px;font-size:1rem;font-weight:bold;cursor:pointer;letter-spacing:1px;transition:background .2s}
+  .retry-btn:hover{background:#79bbff}
+  .progress-bar-wrap{background:#1f2d3d;border-radius:20px;height:6px;margin-bottom:32px;overflow:hidden}
+  .progress-bar{height:100%;background:#58a6ff;border-radius:20px;width:0%;transition:width .4s ease}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>✈️ Speed Drill</h1>
+  <p>4s Multiplication Review — 1 through 12</p>
+  <div class="badge">MATH · 12 QUESTIONS · CADET LEVEL</div>
+</div>
+<div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+<div id="quiz"></div>
+<div class="result-box" id="resultBox">
+  <h2>✈️ Debrief Complete</h2>
+  <div class="result-score" id="resultScore"></div>
+  <div class="result-rank" id="resultRank"></div>
+  <div class="rank-badge" id="rankBadge"></div><br>
+  <button class="retry-btn" onclick="resetQuiz()">🔄 Fly Again</button>
+</div>
+<script>
+const questions=[
+  {q:"4 × 1 = ?",options:["2","4","6","8"],answer:1,feedback:"4 × 1 = 4. Any number times 1 equals itself."},
+  {q:"4 × 2 = ?",options:["4","6","8","10"],answer:2,feedback:"4 × 2 = 8. Four two-legged animals have 8 legs total."},
+  {q:"4 × 3 = ?",options:["9","10","12","14"],answer:2,feedback:"4 × 3 = 12. Three sets of 4 equal 12."},
+  {q:"4 × 4 = ?",options:["12","14","16","18"],answer:2,feedback:"4 × 4 = 16. Four four-legged animals have 16 legs!"},
+  {q:"4 × 5 = ?",options:["16","18","20","22"],answer:2,feedback:"4 × 5 = 20. Five sets of 4 equal 20."},
+  {q:"4 × 6 = ?",options:["20","22","24","26"],answer:2,feedback:"4 × 6 = 24. Six sets of 4 equal 24."},
+  {q:"4 × 7 = ?",options:["24","26","28","30"],answer:2,feedback:"4 × 7 = 28. Seven sets of 4 equal 28."},
+  {q:"4 × 8 = ?",options:["28","30","32","34"],answer:2,feedback:"4 × 8 = 32. Eight sets of 4 equal 32."},
+  {q:"4 × 9 = ?",options:["32","34","36","38"],answer:2,feedback:"4 × 9 = 36. Nine sets of 4 equal 36."},
+  {q:"4 × 10 = ?",options:["36","38","40","42"],answer:2,feedback:"4 × 10 = 40. Ten sets of 4 equal 40."},
+  {q:"4 × 11 = ?",options:["40","42","44","46"],answer:2,feedback:"4 × 11 = 44. Eleven sets of 4 equal 44."},
+  {q:"4 × 12 = ?",options:["44","46","48","50"],answer:2,feedback:"4 × 12 = 48. Twelve sets of 4 equal 48. That's your 4s complete!"}
+];
+const letters=['A','B','C','D'];
+let answered=0,score=0;
+function buildQuiz(){
+  const c=document.getElementById('quiz');c.innerHTML='';answered=0;score=0;updateProgress();
+  questions.forEach((q,qi)=>{
+    const card=document.createElement('div');card.className='question-card';card.id=`card-${qi}`;
+    card.innerHTML=`<div class="question-number">Question ${qi+1} of ${questions.length}</div>
+      <div class="question-text">${q.q}</div>
+      <div class="options" id="options-${qi}">${q.options.map((o,oi)=>`
+        <div class="option" id="opt-${qi}-${oi}" onclick="selectAnswer(${qi},${oi})">
+          <span class="letter">${letters[oi]}</span><span>${o}</span></div>`).join('')}</div>
+      <div class="feedback" id="feedback-${qi}"></div>`;
+    c.appendChild(card);
+  });
+  document.getElementById('resultBox').style.display='none';
+}
+function selectAnswer(qi,selected){
+  const q=questions[qi];
+  document.getElementById(`options-${qi}`).querySelectorAll('.option').forEach(o=>o.classList.add('disabled'));
+  const correct=q.answer===selected;if(correct)score++;
+  document.getElementById(`opt-${qi}-${selected}`).classList.add(correct?'selected-correct':'selected-wrong');
+  if(!correct)document.getElementById(`opt-${qi}-${q.answer}`).classList.add('show-correct');
+  document.getElementById(`card-${qi}`).classList.add(correct?'correct':'wrong');
+  const f=document.getElementById(`feedback-${qi}`);
+  f.className=`feedback ${correct?'correct':'wrong'}`;
+  f.innerHTML=correct?`✅ Correct! ${q.feedback}`:`❌ Not quite. ${q.feedback}`;
+  answered++;updateProgress();
+  if(answered===questions.length)setTimeout(showResult,800);
+}
+function updateProgress(){document.getElementById('progressBar').style.width=(answered/questions.length*100)+'%'}
+function showResult(){
+  const pct=Math.round(score/questions.length*100);
+  let rank,icon;
+  if(pct>=90){rank="Pilot — Mastered!";icon="🦅 Pilot"}
+  else if(pct>=76){rank="Officer — Strong!";icon="🎖️ Officer"}
+  else if(pct>=61){rank="Airman — Solid!";icon="🌟 Airman"}
+  else if(pct>=41){rank="Cadet — Getting it!";icon="✈️ Cadet"}
+  else{rank="Recruit — Keep going!";icon="🪖 Recruit"}
+  document.getElementById('resultScore').textContent=`${score} / ${questions.length} · ${pct}%`;
+  document.getElementById('resultScore').style.color=pct>=70?'#3fb950':pct>=50?'#d29922':'#f85149';
+  document.getElementById('resultRank').textContent=rank;document.getElementById('rankBadge').textContent=icon;
+  const r=document.getElementById('resultBox');r.style.display='block';r.scrollIntoView({behavior:'smooth'});
+}
+function resetQuiz(){buildQuiz();window.scrollTo({top:0,behavior:'smooth'})}
+buildQuiz();
+</script>
+</body>
+</html>

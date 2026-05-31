@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✈️ Mission Intel — Genesis 2</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0d1117;color:#e6edf3;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:30px 20px}
+  .header{text-align:center;margin-bottom:36px}
+  .header h1{font-size:1.8rem;color:#58a6ff;letter-spacing:2px;text-transform:uppercase}
+  .header p{color:#8b949e;margin-top:8px;font-size:.95rem}
+  .badge{display:inline-block;background:#1f2d3d;border:1px solid #30363d;border-radius:20px;padding:4px 14px;font-size:.8rem;color:#58a6ff;margin-top:10px;letter-spacing:1px}
+  .question-card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;margin-bottom:20px;transition:border-color .2s}
+  .question-card.correct{border-color:#3fb950}.question-card.wrong{border-color:#f85149}
+  .question-number{font-size:.75rem;color:#58a6ff;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .question-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:18px}
+  .question-text{font-size:1.05rem;line-height:1.6;color:#e6edf3;flex:1}
+  .hint-btn{background:#1f2d3d;border:1px solid #58a6ff;color:#58a6ff;border-radius:50%;width:26px;height:26px;font-size:.8rem;font-weight:bold;cursor:pointer;flex-shrink:0;margin-top:2px;transition:background .15s;display:flex;align-items:center;justify-content:center}
+  .hint-btn:hover{background:#253142}.hint-btn.used{border-color:#d29922;color:#d29922}
+  .hint-box{background:#1c2a1a;border:1px solid #d29922;border-radius:8px;padding:10px 14px;font-size:.88rem;color:#d29922;margin-bottom:14px;display:none}
+  .hint-box.visible{display:block}
+  .options{display:flex;flex-direction:column;gap:10px}
+  .option{background:#1f2d3d;border:1px solid #30363d;border-radius:8px;padding:12px 16px;cursor:pointer;font-size:.95rem;color:#c9d1d9;transition:background .15s,border-color .15s,transform .1s;display:flex;align-items:center;gap:12px}
+  .option:hover:not(.disabled){background:#253142;border-color:#58a6ff;transform:translateX(4px)}
+  .option .letter{background:#0d1117;border:1px solid #30363d;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:bold;flex-shrink:0;color:#58a6ff}
+  .option.selected-correct{background:#1a3a2a;border-color:#3fb950;color:#3fb950}
+  .option.selected-correct .letter{border-color:#3fb950;color:#3fb950}
+  .option.selected-wrong{background:#3a1a1a;border-color:#f85149;color:#f85149}
+  .option.selected-wrong .letter{border-color:#f85149;color:#f85149}
+  .option.show-correct{background:#1a3a2a;border-color:#3fb950;color:#3fb950;opacity:.7}
+  .option.show-correct .letter{border-color:#3fb950;color:#3fb950}
+  .option.disabled{cursor:default}
+  .feedback{margin-top:14px;padding:10px 14px;border-radius:8px;font-size:.9rem;display:none}
+  .feedback.correct{background:#1a3a2a;border:1px solid #3fb950;color:#3fb950;display:block}
+  .feedback.wrong{background:#3a1a1a;border:1px solid #f85149;color:#f85149;display:block}
+  .result-box{background:#161b22;border:2px solid #58a6ff;border-radius:16px;padding:36px;text-align:center;margin-top:30px;display:none}
+  .result-box h2{font-size:1.6rem;color:#58a6ff;margin-bottom:10px}
+  .result-score{font-size:3.5rem;font-weight:bold;margin:16px 0}
+  .result-rank{font-size:1.1rem;color:#8b949e;margin-bottom:24px}
+  .rank-badge{display:inline-block;background:#1f2d3d;border:1px solid #58a6ff;border-radius:12px;padding:8px 20px;font-size:1rem;color:#58a6ff;margin-bottom:24px}
+  .retry-btn{background:#58a6ff;color:#0d1117;border:none;border-radius:8px;padding:12px 32px;font-size:1rem;font-weight:bold;cursor:pointer;letter-spacing:1px;transition:background .2s}
+  .retry-btn:hover{background:#79bbff}
+  .progress-bar-wrap{background:#1f2d3d;border-radius:20px;height:6px;margin-bottom:32px;overflow:hidden}
+  .progress-bar{height:100%;background:#58a6ff;border-radius:20px;width:0%;transition:width .4s ease}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>✈️ Mission Intel</h1>
+  <p>Genesis 2 — The Garden of Eden</p>
+  <div class="badge">GENESIS 2 · 12 QUESTIONS · CADET LEVEL</div>
+</div>
+<div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+<div id="quiz"></div>
+<div class="result-box" id="resultBox">
+  <h2>✈️ Debrief Complete</h2>
+  <div class="result-score" id="resultScore"></div>
+  <div class="result-rank" id="resultRank"></div>
+  <div class="rank-badge" id="rankBadge"></div><br>
+  <button class="retry-btn" onclick="resetQuiz()">🔄 Fly Again</button>
+</div>
+<script>
+const questions=[
+  {
+    question:"What did God do on the seventh day?",
+    options:["He created the oceans","He rested from all his work and blessed the day","He made the animals","He planted the Garden of Eden"],
+    answer:1,
+    hint:"The seventh day was different from all the others — God stopped creating and did something special with this day.",
+    feedback:"God rested from all his work on the seventh day. He blessed it and made it holy because on it He rested from all the work of creation. (Genesis 2:2-3)"
+  },
+  {
+    question:"How did God create man?",
+    options:["He spoke man into existence like the animals","He formed man from the dust of the ground and breathed life into him","He made man from water","He created man from a beam of light"],
+    answer:1,
+    hint:"Two things happened — God used something from the earth and then did something very personal to give man life.",
+    feedback:"God formed man from the dust of the ground and breathed into his nostrils the breath of life. Man became a living creature. This shows a special, personal connection between God and man. (Genesis 2:7)"
+  },
+  {
+    question:"What was the name of the garden God planted for man?",
+    options:["The Garden of Canaan","The Garden of Eden","The Garden of Zion","The Garden of Life"],
+    answer:1,
+    hint:"The name of this garden is one of the most well-known places in the Bible.",
+    feedback:"God planted the Garden of Eden in the east and placed the man He had formed there to live and work. (Genesis 2:8)"
+  },
+  {
+    question:"What were the two special trees in the middle of the garden?",
+    options:["The tree of wisdom and the tree of strength","The tree of light and the tree of darkness","The tree of life and the tree of the knowledge of good and evil","The tree of blessing and the tree of cursing"],
+    answer:2,
+    hint:"One tree was about living forever. The other was about knowing something God had not yet given man.",
+    feedback:"The tree of life and the tree of the knowledge of good and evil were both in the middle of the garden. These two trees would play a major role in what happened next in Genesis 3. (Genesis 2:9)"
+  },
+  {
+    question:"Which tree was Adam forbidden to eat from?",
+    options:["The tree of life","Every tree except the tree in the center","The tree of the knowledge of good and evil","All trees with fruit"],
+    answer:2,
+    hint:"God gave Adam freedom with almost every tree — but drew one clear line.",
+    feedback:"God told Adam he could eat from any tree in the garden except the tree of the knowledge of good and evil. God set one clear boundary. (Genesis 2:16-17)"
+  },
+  {
+    question:"What did God say would happen if Adam ate from the forbidden tree?",
+    options:["He would become wise like God","He would be removed from the garden","He would surely die","He would lose his memory"],
+    answer:2,
+    hint:"God gave a serious warning — the consequence was the most serious thing that can happen to a person.",
+    feedback:"God said 'In the day that you eat of it you shall surely die.' This was a warning about the consequences of sin — both spiritual and physical death. (Genesis 2:17)"
+  },
+  {
+    question:"What did God say was 'not good'?",
+    options:["That the garden had too many trees","That man was alone with no helper","That man worked too hard","That the animals were not named"],
+    answer:1,
+    hint:"After creating everything and saying it was good, God noticed something was missing for man.",
+    feedback:"God said 'It is not good that the man should be alone; I will make him a helper fit for him.' This is the first time something was called 'not good' in creation. (Genesis 2:18)"
+  },
+  {
+    question:"What job did God give Adam in the garden?",
+    options:["To build a city","To fish in the four rivers","To work and keep the garden","To count all the stars"],
+    answer:2,
+    hint:"God didn't just put Adam in the garden to relax — He gave him a purpose and a responsibility.",
+    feedback:"God put man in the Garden of Eden to work it and keep it. Work was part of God's good design before sin entered the world. (Genesis 2:15)"
+  },
+  {
+    question:"What did God bring to Adam before creating woman?",
+    options:["Food from every tree","Every beast and bird so Adam could name them","The rivers and seas","Angels to keep him company"],
+    answer:1,
+    hint:"God gave Adam an important task — giving names showed that man had authority over creation.",
+    feedback:"God brought every beast of the field and every bird of the sky to Adam to see what he would name them. Whatever Adam called each creature, that was its name. (Genesis 2:19-20)"
+  },
+  {
+    question:"How did God create the woman?",
+    options:["He formed her from dust like Adam","He spoke her into existence","He caused Adam to sleep deeply and took one of his ribs","He made her from water"],
+    answer:2,
+    hint:"God did something while Adam was asleep — He took something from Adam's own body.",
+    feedback:"God caused a deep sleep to fall on Adam, took one of his ribs, and fashioned the woman from it. She came from Adam himself, showing their deep connection. (Genesis 2:21-22)"
+  },
+  {
+    question:"What did Adam say when he first saw the woman?",
+    options:["He gave her a name without saying anything","He said she shall be called Woman because she was taken out of Man","He asked God what she was","He said nothing and went back to sleep"],
+    answer:1,
+    hint:"Adam recognized right away that she came from him — and his words showed that connection.",
+    feedback:"Adam said 'This at last is bone of my bones and flesh of my flesh; she shall be called Woman, because she was taken out of Man.' (Genesis 2:23)"
+  },
+  {
+    question:"What does Genesis 2:24 say about marriage?",
+    options:["A man must ask permission from the animals","A woman shall leave her family and follow the man","A man shall leave his father and mother and hold fast to his wife — the two become one flesh","A man and woman shall live apart until they are ready"],
+    answer:2,
+    hint:"This verse is one of the most important foundations for marriage in the entire Bible.",
+    feedback:"'Therefore a man shall leave his father and his mother and hold fast to his wife, and they shall become one flesh.' This is God's original design for marriage — one man, one woman, one flesh. (Genesis 2:24)"
+  }
+];
+const letters=['A','B','C','D'];
+let answered=0,score=0;
+function buildQuiz(){
+  const c=document.getElementById('quiz');c.innerHTML='';answered=0;score=0;updateProgress();
+  questions.forEach((q,qi)=>{
+    const card=document.createElement('div');card.className='question-card';card.id=`card-${qi}`;
+    card.innerHTML=`<div class="question-number">Question ${qi+1} of ${questions.length}</div>
+      <div class="question-header"><div class="question-text">${q.question}</div>
+      <button class="hint-btn" id="hint-btn-${qi}" onclick="toggleHint(${qi})" title="Need a hint?">?</button></div>
+      <div class="hint-box" id="hint-${qi}">💡 Hint: ${q.hint}</div>
+      <div class="options" id="options-${qi}">${q.options.map((o,oi)=>`
+        <div class="option" id="opt-${qi}-${oi}" onclick="selectAnswer(${qi},${oi})">
+          <span class="letter">${letters[oi]}</span><span>${o}</span></div>`).join('')}</div>
+      <div class="feedback" id="feedback-${qi}"></div>`;
+    c.appendChild(card);
+  });
+  document.getElementById('resultBox').style.display='none';
+}
+function toggleHint(qi){
+  document.getElementById(`hint-${qi}`).classList.toggle('visible');
+  document.getElementById(`hint-btn-${qi}`).classList.toggle('used',document.getElementById(`hint-${qi}`).classList.contains('visible'));
+}
+function selectAnswer(qi,selected){
+  const q=questions[qi];
+  document.getElementById(`options-${qi}`).querySelectorAll('.option').forEach(o=>o.classList.add('disabled'));
+  const correct=q.answer===selected;if(correct)score++;
+  document.getElementById(`opt-${qi}-${selected}`).classList.add(correct?'selected-correct':'selected-wrong');
+  if(!correct)document.getElementById(`opt-${qi}-${q.answer}`).classList.add('show-correct');
+  document.getElementById(`card-${qi}`).classList.add(correct?'correct':'wrong');
+  const f=document.getElementById(`feedback-${qi}`);
+  f.className=`feedback ${correct?'correct':'wrong'}`;
+  f.innerHTML=correct?`✅ Correct! ${q.feedback}`:`❌ Not quite. ${q.feedback}`;
+  answered++;updateProgress();
+  if(answered===questions.length)setTimeout(showResult,800);
+}
+function updateProgress(){document.getElementById('progressBar').style.width=(answered/questions.length*100)+'%'}
+function showResult(){
+  const pct=Math.round(score/questions.length*100);
+  let rank,icon;
+  if(pct>=90){rank="Pilot — Mastered!";icon="🦅 Pilot"}
+  else if(pct>=76){rank="Officer — Strong!";icon="🎖️ Officer"}
+  else if(pct>=61){rank="Airman — Solid!";icon="🌟 Airman"}
+  else if(pct>=41){rank="Cadet — Getting it!";icon="✈️ Cadet"}
+  else{rank="Recruit — Keep going!";icon="🪖 Recruit"}
+  document.getElementById('resultScore').textContent=`${score} / ${questions.length} · ${pct}%`;
+  document.getElementById('resultScore').style.color=pct>=70?'#3fb950':pct>=50?'#d29922':'#f85149';
+  document.getElementById('resultRank').textContent=rank;document.getElementById('rankBadge').textContent=icon;
+  const r=document.getElementById('resultBox');r.style.display='block';r.scrollIntoView({behavior:'smooth'});
+}
+function resetQuiz(){buildQuiz();window.scrollTo({top:0,behavior:'smooth'})}
+buildQuiz();
+</script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✈️ Mission Intel — Genesis Timeline</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0d1117;color:#e6edf3;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:30px 20px}
+  .header{text-align:center;margin-bottom:36px}
+  .header h1{font-size:1.8rem;color:#58a6ff;letter-spacing:2px;text-transform:uppercase}
+  .header p{color:#8b949e;margin-top:8px;font-size:.95rem}
+  .badge{display:inline-block;background:#1f2d3d;border:1px solid #30363d;border-radius:20px;padding:4px 14px;font-size:.8rem;color:#58a6ff;margin-top:10px;letter-spacing:1px}
+  .question-card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;margin-bottom:20px;transition:border-color .2s}
+  .question-card.correct{border-color:#3fb950}.question-card.wrong{border-color:#f85149}
+  .question-number{font-size:.75rem;color:#58a6ff;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .question-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:18px}
+  .question-text{font-size:1.05rem;line-height:1.6;color:#e6edf3;flex:1}
+  .hint-btn{background:#1f2d3d;border:1px solid #58a6ff;color:#58a6ff;border-radius:50%;width:26px;height:26px;font-size:.8rem;font-weight:bold;cursor:pointer;flex-shrink:0;margin-top:2px;transition:background .15s;display:flex;align-items:center;justify-content:center}
+  .hint-btn:hover{background:#253142}.hint-btn.used{border-color:#d29922;color:#d29922}
+  .hint-box{background:#1c2a1a;border:1px solid #d29922;border-radius:8px;padding:10px 14px;font-size:.88rem;color:#d29922;margin-bottom:14px;display:none}
+  .hint-box.visible{display:block}
+  .options{display:flex;flex-direction:column;gap:10px}
+  .option{background:#1f2d3d;border:1px solid #30363d;border-radius:8px;padding:12px 16px;cursor:pointer;font-size:.95rem;color:#c9d1d9;transition:background .15s,border-color .15s,transform .1s;display:flex;align-items:center;gap:12px}
+  .option:hover:not(.disabled){background:#253142;border-color:#58a6ff;transform:translateX(4px)}
+  .option .letter{background:#0d1117;border:1px solid #30363d;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:bold;flex-shrink:0;color:#58a6ff}
+  .option.selected-correct{background:#1a3a2a;border-color:#3fb950;color:#3fb950}
+  .option.selected-correct .letter{border-color:#3fb950;color:#3fb950}
+  .option.selected-wrong{background:#3a1a1a;border-color:#f85149;color:#f85149}
+  .option.selected-wrong .letter{border-color:#f85149;color:#f85149}
+  .option.show-correct{background:#1a3a2a;border-color:#3fb950;color:#3fb950;opacity:.7}
+  .option.show-correct .letter{border-color:#3fb950;color:#3fb950}
+  .option.disabled{cursor:default}
+  .feedback{margin-top:14px;padding:10px 14px;border-radius:8px;font-size:.9rem;display:none}
+  .feedback.correct{background:#1a3a2a;border:1px solid #3fb950;color:#3fb950;display:block}
+  .feedback.wrong{background:#3a1a1a;border:1px solid #f85149;color:#f85149;display:block}
+  .result-box{background:#161b22;border:2px solid #58a6ff;border-radius:16px;padding:36px;text-align:center;margin-top:30px;display:none}
+  .result-box h2{font-size:1.6rem;color:#58a6ff;margin-bottom:10px}
+  .result-score{font-size:3.5rem;font-weight:bold;margin:16px 0}
+  .result-rank{font-size:1.1rem;color:#8b949e;margin-bottom:24px}
+  .rank-badge{display:inline-block;background:#1f2d3d;border:1px solid #58a6ff;border-radius:12px;padding:8px 20px;font-size:1rem;color:#58a6ff;margin-bottom:24px}
+  .retry-btn{background:#58a6ff;color:#0d1117;border:none;border-radius:8px;padding:12px 32px;font-size:1rem;font-weight:bold;cursor:pointer;letter-spacing:1px;transition:background .2s}
+  .retry-btn:hover{background:#79bbff}
+  .progress-bar-wrap{background:#1f2d3d;border-radius:20px;height:6px;margin-bottom:32px;overflow:hidden}
+  .progress-bar{height:100%;background:#58a6ff;border-radius:20px;width:0%;transition:width .4s ease}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>✈️ Mission Intel</h1>
+  <p>Genesis — The Big Picture</p>
+  <div class="badge">GENESIS · 12 QUESTIONS · CADET LEVEL</div>
+</div>
+<div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+<div id="quiz"></div>
+<div class="result-box" id="resultBox">
+  <h2>✈️ Debrief Complete</h2>
+  <div class="result-score" id="resultScore"></div>
+  <div class="result-rank" id="resultRank"></div>
+  <div class="rank-badge" id="rankBadge"></div><br>
+  <button class="retry-btn" onclick="resetQuiz()">🔄 Fly Again</button>
+</div>
+<script>
+const questions=[
+  {
+    question:"What does the word 'Genesis' mean?",
+    options:["Ending","Beginning or Origin","Flood","Creation of animals"],
+    answer:1,
+    hint:"Think about what the first book of the Bible is about — it describes something happening for the very first time.",
+    feedback:"Genesis means 'beginning' or 'origin.' It is the book of beginnings — the beginning of creation, of humanity, of sin, and of God's plan to rescue the world. Everything in the Bible starts here. (Genesis 1:1)"
+  },
+  {
+    question:"A Hebrew phrase meaning 'these are the generations of' appears 10 times in Genesis. What is this word called?",
+    options:["Shema","Torah","Toledot","Sabbath"],
+    answer:2,
+    hint:"It's a Hebrew word that works like a chapter divider — each time it appears, it introduces a new section of the book.",
+    feedback:"The Hebrew word 'toledot' (generations of) appears 10 times in Genesis and organizes the whole book into sections. Genesis is not a random collection of stories — it is a carefully structured family history that points to God's plan. (Genesis 2:4, 5:1, etc.)"
+  },
+  {
+    question:"How many total years did Adam live?",
+    options:["430 years","750 years","930 years","1,000 years"],
+    answer:2,
+    hint:"Adam lived just under a thousand years. The Bible gives the exact number in Genesis 5.",
+    feedback:"Adam lived 930 years in total. Before the flood, people lived much longer than we do today. This long lifespan is part of what makes the timeline of Genesis look so different from what we expect. (Genesis 5:5)"
+  },
+  {
+    question:"Methuselah is the oldest person ever recorded in the Bible. How old was he when he died?",
+    options:["850 years","969 years","912 years","1,200 years"],
+    answer:1,
+    hint:"He lived just under 1,000 years. Based on the numbers in Genesis 5, he may have died the very year the flood came.",
+    feedback:"Methuselah lived 969 years — the longest life recorded in Scripture. When you add up the genealogy numbers in Genesis 5, Methuselah appears to have died the same year the flood arrived. (Genesis 5:27)"
+  },
+  {
+    question:"What did God see that caused Him to send the great flood?",
+    options:["People stopped farming the land","Humans built cities that were too large","Every thought and intention of mankind was only evil continually","People forgot how to worship God"],
+    answer:2,
+    hint:"God saw something about the human heart that deeply grieved Him before He sent judgment.",
+    feedback:"God saw that the wickedness of man was great and that every intention of the thoughts of his heart was only evil continually. This grieved God, and He decided to send the flood as judgment. (Genesis 6:5)"
+  },
+  {
+    question:"About how long did Noah and his family spend on the ark before stepping onto dry land?",
+    options:["40 days","3 months","About one full year","7 years"],
+    answer:2,
+    hint:"It rained for 40 days — but the flood waters took much longer to recede. The total time adds up to nearly a year.",
+    feedback:"Though it rained for 40 days and nights, Noah and his family were on the ark for about a full year before they could step onto dry land again. (Genesis 7-8)"
+  },
+  {
+    question:"After the flood, what did God promise — and what was the sign of that promise?",
+    options:["Never to create humans again — sign was the sun","Never to flood the whole earth again — sign was a rainbow","Never to allow sin again — sign was fire","Never to destroy the animals — sign was a dove"],
+    answer:1,
+    hint:"After Noah offered a sacrifice, God made a covenant with all living creatures. Look for a colorful sign in the sky.",
+    feedback:"God promised He would never again destroy all living things with a flood. The sign of this covenant was a rainbow — a reminder every time we see one that God is faithful to His word. (Genesis 9:12-17)"
+  },
+  {
+    question:"What were the people of Babel trying to build — and why?",
+    options:["A ship to cross the great sea","A tower to reach the heavens and make a name for themselves","A temple to worship God properly","A wall to protect their city from enemies"],
+    answer:1,
+    hint:"They wanted to be famous and reach somewhere they were not supposed to go. It was an act of pride.",
+    feedback:"The people of Babel tried to build a tower to reach the heavens and make a name for themselves. This was direct rebellion against God's command to scatter and fill the earth. (Genesis 11:4)"
+  },
+  {
+    question:"What did God do to stop the people at the Tower of Babel?",
+    options:["He destroyed the tower with fire","He confused their language so they could not understand each other","He sent a flood to wash them away","He removed their ability to build"],
+    answer:1,
+    hint:"After this event, people finally spread out across the earth — which is exactly what God had commanded from the beginning.",
+    feedback:"God confused their language so they could no longer understand each other. This stopped the building project and caused them to scatter across the whole earth — exactly what God had commanded. (Genesis 11:7-8)"
+  },
+  {
+    question:"After Babel, who did God call out of a city called Ur to begin a new nation?",
+    options:["Noah","Isaac","Abram (Abraham)","Jacob"],
+    answer:2,
+    hint:"His name was later changed by God to mean 'father of many nations.'",
+    feedback:"God called Abram out of Ur and promised him land, a great nation, and that all the world would be blessed through him. His name was later changed to Abraham. This was the beginning of God's covenant people — the line that leads to Jesus. (Genesis 12:1-3)"
+  },
+  {
+    question:"How does the book of Genesis end?",
+    options:["With Moses receiving God's law","With creation being completed on the seventh day","With Joseph dying in Egypt and asking his bones to be taken back to the Promised Land","With Noah stepping off the ark"],
+    answer:2,
+    hint:"Genesis ends in Egypt — with a dying man making a request that showed he believed God would keep His promise.",
+    feedback:"Genesis ends with Joseph dying in Egypt at age 110. His final request was for the Israelites to carry his bones back to the Promised Land when God brought them home — a statement of faith that God's promise was real and would come true. (Genesis 50:25-26)"
+  },
+  {
+    question:"Why is understanding the timeline of Genesis important for reading the whole Bible?",
+    options:["It helps us memorize all 50 chapters in order","It proves the exact age of the earth down to the year","It shows how all of Scripture connects as one true story — from creation to redemption","It tells us which events are myths and which ones are real"],
+    answer:2,
+    hint:"Genesis is the foundation. If it is real history, then everything God promises and everything Jesus came to do builds on top of it.",
+    feedback:"Understanding Genesis as real history helps us see the whole Bible as one connected story — creation, fall, flood, calling of Abraham, and ultimately the coming of Jesus Christ. Genesis is the foundation on which all of Scripture stands."
+  }
+];
+const letters=['A','B','C','D'];
+let answered=0,score=0;
+function buildQuiz(){
+  const c=document.getElementById('quiz');c.innerHTML='';answered=0;score=0;updateProgress();
+  questions.forEach((q,qi)=>{
+    const card=document.createElement('div');card.className='question-card';card.id=`card-${qi}`;
+    card.innerHTML=`<div class="question-number">Question ${qi+1} of ${questions.length}</div>
+      <div class="question-header"><div class="question-text">${q.question}</div>
+      <button class="hint-btn" id="hint-btn-${qi}" onclick="toggleHint(${qi})" title="Need a hint?">?</button></div>
+      <div class="hint-box" id="hint-${qi}">💡 Hint: ${q.hint}</div>
+      <div class="options" id="options-${qi}">${q.options.map((o,oi)=>`
+        <div class="option" id="opt-${qi}-${oi}" onclick="selectAnswer(${qi},${oi})">
+          <span class="letter">${letters[oi]}</span><span>${o}</span></div>`).join('')}</div>
+      <div class="feedback" id="feedback-${qi}"></div>`;
+    c.appendChild(card);
+  });
+  document.getElementById('resultBox').style.display='none';
+}
+function toggleHint(qi){
+  document.getElementById(`hint-${qi}`).classList.toggle('visible');
+  document.getElementById(`hint-btn-${qi}`).classList.toggle('used',document.getElementById(`hint-${qi}`).classList.contains('visible'));
+}
+function selectAnswer(qi,selected){
+  const q=questions[qi];
+  document.getElementById(`options-${qi}`).querySelectorAll('.option').forEach(o=>o.classList.add('disabled'));
+  const correct=q.answer===selected;if(correct)score++;
+  document.getElementById(`opt-${qi}-${selected}`).classList.add(correct?'selected-correct':'selected-wrong');
+  if(!correct)document.getElementById(`opt-${qi}-${q.answer}`).classList.add('show-correct');
+  document.getElementById(`card-${qi}`).classList.add(correct?'correct':'wrong');
+  const f=document.getElementById(`feedback-${qi}`);
+  f.className=`feedback ${correct?'correct':'wrong'}`;
+  f.innerHTML=correct?`✅ Correct! ${q.feedback}`:`❌ Not quite. ${q.feedback}`;
+  answered++;updateProgress();
+  if(answered===questions.length)setTimeout(showResult,800);
+}
+function updateProgress(){document.getElementById('progressBar').style.width=(answered/questions.length*100)+'%'}
+function showResult(){
+  const pct=Math.round(score/questions.length*100);
+  let rank,icon;
+  if(pct>=90){rank="Pilot — Mastered!";icon="🦅 Pilot"}
+  else if(pct>=76){rank="Officer — Strong!";icon="🎖️ Officer"}
+  else if(pct>=61){rank="Airman — Solid!";icon="🌟 Airman"}
+  else if(pct>=41){rank="Cadet — Getting it!";icon="✈️ Cadet"}
+  else{rank="Recruit — Keep going!";icon="🪖 Recruit"}
+  document.getElementById('resultScore').textContent=`${score} / ${questions.length} · ${pct}%`;
+  document.getElementById('resultScore').style.color=pct>=70?'#3fb950':pct>=50?'#d29922':'#f85149';
+  document.getElementById('resultRank').textContent=rank;document.getElementById('rankBadge').textContent=icon;
+  const r=document.getElementById('resultBox');r.style.display='block';r.scrollIntoView({behavior:'smooth'});
+}
+function resetQuiz(){buildQuiz();window.scrollTo({top:0,behavior:'smooth'})}
+buildQuiz();
+</script>
+</body>
+</html>
