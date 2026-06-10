@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✈️ Mission Intel — Nouns Review</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0d1117;color:#e6edf3;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:30px 20px}
+  .header{text-align:center;margin-bottom:36px}
+  .header h1{font-size:1.8rem;color:#58a6ff;letter-spacing:2px;text-transform:uppercase}
+  .header p{color:#8b949e;margin-top:8px;font-size:.95rem}
+  .badge{display:inline-block;background:#1f2d3d;border:1px solid #30363d;border-radius:20px;padding:4px 14px;font-size:.8rem;color:#58a6ff;margin-top:10px;letter-spacing:1px}
+  .question-card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;margin-bottom:20px;transition:border-color .2s}
+  .question-card.correct{border-color:#3fb950}.question-card.wrong{border-color:#f85149}
+  .question-number{font-size:.75rem;color:#58a6ff;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .question-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:18px}
+  .question-text{font-size:1.05rem;line-height:1.6;color:#e6edf3;flex:1}
+  .hint-btn{background:#1f2d3d;border:1px solid #58a6ff;color:#58a6ff;border-radius:50%;width:26px;height:26px;font-size:.8rem;font-weight:bold;cursor:pointer;flex-shrink:0;margin-top:2px;transition:background .15s;display:flex;align-items:center;justify-content:center}
+  .hint-btn:hover{background:#253142}.hint-btn.used{border-color:#d29922;color:#d29922}
+  .hint-box{background:#1c2a1a;border:1px solid #d29922;border-radius:8px;padding:10px 14px;font-size:.88rem;color:#d29922;margin-bottom:14px;display:none}
+  .hint-box.visible{display:block}
+  .options{display:flex;flex-direction:column;gap:10px}
+  .option{background:#1f2d3d;border:1px solid #30363d;border-radius:8px;padding:12px 16px;cursor:pointer;font-size:.95rem;color:#c9d1d9;transition:background .15s,border-color .15s,transform .1s;display:flex;align-items:center;gap:12px}
+  .option:hover:not(.disabled){background:#253142;border-color:#58a6ff;transform:translateX(4px)}
+  .option .letter{background:#0d1117;border:1px solid #30363d;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:bold;flex-shrink:0;color:#58a6ff}
+  .option.selected-correct{background:#1a3a2a;border-color:#3fb950;color:#3fb950}
+  .option.selected-correct .letter{border-color:#3fb950;color:#3fb950}
+  .option.selected-wrong{background:#3a1a1a;border-color:#f85149;color:#f85149}
+  .option.selected-wrong .letter{border-color:#f85149;color:#f85149}
+  .option.show-correct{background:#1a3a2a;border-color:#3fb950;color:#3fb950;opacity:.7}
+  .option.show-correct .letter{border-color:#3fb950;color:#3fb950}
+  .option.disabled{cursor:default}
+  .feedback{margin-top:14px;padding:10px 14px;border-radius:8px;font-size:.9rem;display:none}
+  .feedback.correct{background:#1a3a2a;border:1px solid #3fb950;color:#3fb950;display:block}
+  .feedback.wrong{background:#3a1a1a;border:1px solid #f85149;color:#f85149;display:block}
+  .result-box{background:#161b22;border:2px solid #58a6ff;border-radius:16px;padding:36px;text-align:center;margin-top:30px;display:none}
+  .result-box h2{font-size:1.6rem;color:#58a6ff;margin-bottom:10px}
+  .result-score{font-size:3.5rem;font-weight:bold;margin:16px 0}
+  .result-rank{font-size:1.1rem;color:#8b949e;margin-bottom:24px}
+  .rank-badge{display:inline-block;background:#1f2d3d;border:1px solid #58a6ff;border-radius:12px;padding:8px 20px;font-size:1rem;color:#58a6ff;margin-bottom:24px}
+  .retry-btn{background:#58a6ff;color:#0d1117;border:none;border-radius:8px;padding:12px 32px;font-size:1rem;font-weight:bold;cursor:pointer;letter-spacing:1px;transition:background .2s}
+  .retry-btn:hover{background:#79bbff}
+  .progress-bar-wrap{background:#1f2d3d;border-radius:20px;height:6px;margin-bottom:32px;overflow:hidden}
+  .progress-bar{height:100%;background:#58a6ff;border-radius:20px;width:0%;transition:width .4s ease}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>✈️ Mission Intel</h1>
+  <p>Nouns Review — Checkride</p>
+  <div class="badge">ELA · 12 QUESTIONS · FINAL CHECK</div>
+</div>
+<div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+<div id="quiz"></div>
+<div class="result-box" id="resultBox">
+  <h2>✈️ Checkride Complete</h2>
+  <div class="result-score" id="resultScore"></div>
+  <div class="result-rank" id="resultRank"></div>
+  <div class="rank-badge" id="rankBadge"></div><br>
+  <button class="retry-btn" onclick="resetQuiz()">🔄 Fly Again</button>
+</div>
+<script>
+const questions=[
+  {question:"What are the four categories of things a noun can name?",options:["Person, animal, color, number","Subject, object, predicate, clause","Person, place, thing, idea","Verb, adjective, adverb, noun"],answer:2,hint:"You learned this at the start of noun week. It is the definition of a noun.",feedback:"A noun names a person, place, thing, or idea. These four categories cover everything — from 'pilot' to 'Texas' to 'notebook' to 'courage.'"},
+  {question:"Which is a COMMON noun?",options:["Missouri","July","Country","Kolten"],answer:2,hint:"Common nouns name general categories — not specific people or places.",feedback:"'Country' is a common noun — it names a general category. 'Missouri' and 'July' are proper nouns (specific names), and 'Kolten' is a proper noun (specific person)."},
+  {question:"Which is a PROPER noun?",options:["River","Air Force Academy","School","Airplane"],answer:1,hint:"Proper nouns always have capital letters — even in the middle of a sentence.",feedback:"'Air Force Academy' is a proper noun — it names a specific place and is capitalized. 'River,' 'school,' and 'airplane' are common nouns."},
+  {question:"What is the fastest way to test if a word is a noun?",options:["If it ends in -ly, it is probably a noun","If you can put 'the' before it, it is probably a noun","If it shows action, it is probably a noun","If it is more than five letters, it is probably a noun"],answer:1,hint:"You can say 'the dog,' 'the city,' 'the freedom' — but you cannot say 'the ran' or 'the quickly.'",feedback:"If you can put 'the' in front of a word and it still makes sense, it is probably a noun. 'The pilot' works. 'The freedom' works. 'The ran' does not — 'ran' is a verb."},
+  {question:"Which sentence has a noun used as the SUBJECT?",options:["She runs every morning.","The pilot landed the plane safely.","They were very tired.","He smiled at the camera."],answer:1,hint:"Look for the noun that is doing the action in the sentence.",feedback:"'Pilot' is a noun and the subject of the sentence — it is the one doing the action (landing). 'She,' 'they,' and 'he' are pronouns, not nouns."},
+  {question:"What is the difference between 'city' and 'Springfield'?",options:["No difference — both are nouns meaning the same thing","'City' is a common noun and 'Springfield' is a proper noun","'Springfield' is a common noun and 'city' is a proper noun","'City' is a verb when used in a sentence"],answer:1,hint:"One names a general category. The other names one specific place.",feedback:"'City' is a common noun — it refers to the general idea of a city. 'Springfield' is a proper noun — it names one specific city and is always capitalized."},
+  {question:"Find all proper nouns: \"My dad flew a Boeing 737 over the Pacific Ocean.\"",options:["Dad","Boeing 737 and Pacific Ocean","Flew","Over"],answer:1,hint:"Look for words that are capitalized because they are official names — not just because they start a sentence.",feedback:"'Boeing 737' (a specific aircraft model) and 'Pacific Ocean' (a specific body of water) are both proper nouns. 'Dad' here is a common noun modified by 'my.'"},
+  {question:"How many nouns are in this sentence? \"Courage, skill, and practice make a great pilot.\"",options:["Two","Three","Four","Five"],answer:2,hint:"Some are idea nouns and one is a person noun. Count all four categories.",feedback:"Four nouns: 'courage' (idea), 'skill' (idea), 'practice' (idea/thing), and 'pilot' (person). 'Make' is a verb and 'great' is an adjective."},
+  {question:"Which word is NOT a noun in this sentence? \"The brave soldier crossed the river at dawn.\"",options:["Soldier","River","Dawn","Brave"],answer:3,hint:"One word describes what the soldier was like — not what something is named.",feedback:"'Brave' is an adjective — it describes the soldier. 'Soldier' (person), 'river' (place), and 'dawn' (time — a thing/idea) are all nouns."},
+  {question:"Which group contains ONLY nouns?",options:["Run, jump, fly, swim","Quickly, slowly, loudly, gently","Freedom, country, pilot, ocean","Beautiful, smart, fast, tall"],answer:2,hint:"One group names people, places, things, and ideas — and only those.",feedback:"'Freedom' (idea), 'country' (place), 'pilot' (person), and 'ocean' (place/thing) are all nouns. Group A are verbs, group B are adverbs, and group D are adjectives."},
+  {question:"Which sentence correctly uses a proper noun?",options:["I flew over the pacific ocean.","My pilot is very skilled.","The F-16 Fighting Falcon is built in Texas.","The country has many cities."],answer:2,hint:"Look for the sentence where a specific official name is correctly capitalized.",feedback:"In option C, 'F-16 Fighting Falcon' and 'Texas' are both correctly capitalized proper nouns. Option A is wrong because 'Pacific Ocean' should be capitalized."},
+  {question:"Which of the following is an IDEA noun?",options:["Notebook","Airport","Courage","Kolten"],answer:2,hint:"An idea noun names something real that you cannot touch or see.",feedback:"'Courage' is an idea noun — it is real, but you cannot hold it or point to it. 'Notebook' is a thing, 'airport' is a place, and 'Kolten' is a proper noun naming a person."}
+];
+const letters=['A','B','C','D'];
+let answered=0,score=0;
+function buildQuiz(){
+  const c=document.getElementById('quiz');c.innerHTML='';answered=0;score=0;updateProgress();
+  questions.forEach((q,qi)=>{
+    const card=document.createElement('div');card.className='question-card';card.id=`card-${qi}`;
+    card.innerHTML=`<div class="question-number">Question ${qi+1} of ${questions.length}</div>
+      <div class="question-header"><div class="question-text">${q.question}</div>
+      <button class="hint-btn" id="hint-btn-${qi}" onclick="toggleHint(${qi})" title="Need a hint?">?</button></div>
+      <div class="hint-box" id="hint-${qi}">💡 Hint: ${q.hint}</div>
+      <div class="options" id="options-${qi}">${q.options.map((o,oi)=>`
+        <div class="option" id="opt-${qi}-${oi}" onclick="selectAnswer(${qi},${oi})">
+          <span class="letter">${letters[oi]}</span><span>${o}</span></div>`).join('')}</div>
+      <div class="feedback" id="feedback-${qi}"></div>`;
+    c.appendChild(card);
+  });
+  document.getElementById('resultBox').style.display='none';
+}
+function toggleHint(qi){
+  document.getElementById(`hint-${qi}`).classList.toggle('visible');
+  document.getElementById(`hint-btn-${qi}`).classList.toggle('used',document.getElementById(`hint-${qi}`).classList.contains('visible'));
+}
+function selectAnswer(qi,selected){
+  const q=questions[qi];
+  document.getElementById(`options-${qi}`).querySelectorAll('.option').forEach(o=>o.classList.add('disabled'));
+  const correct=q.answer===selected;if(correct)score++;
+  document.getElementById(`opt-${qi}-${selected}`).classList.add(correct?'selected-correct':'selected-wrong');
+  if(!correct)document.getElementById(`opt-${qi}-${q.answer}`).classList.add('show-correct');
+  document.getElementById(`card-${qi}`).classList.add(correct?'correct':'wrong');
+  const f=document.getElementById(`feedback-${qi}`);
+  f.className=`feedback ${correct?'correct':'wrong'}`;
+  f.innerHTML=correct?`✅ Correct! ${q.feedback}`:`❌ Not quite. ${q.feedback}`;
+  answered++;updateProgress();
+  if(answered===questions.length)setTimeout(showResult,800);
+}
+function updateProgress(){document.getElementById('progressBar').style.width=(answered/questions.length*100)+'%'}
+function showResult(){
+  const pct=Math.round(score/questions.length*100);
+  let rank,icon;
+  if(pct>=90){rank="Pilot — Checkride Passed!";icon="🦅 Pilot"}
+  else if(pct>=76){rank="Officer — Strong!";icon="🎖️ Officer"}
+  else if(pct>=61){rank="Airman — Solid!";icon="🌟 Airman"}
+  else if(pct>=41){rank="Cadet — Getting it!";icon="✈️ Cadet"}
+  else{rank="Recruit — Review and retry!";icon="🪖 Recruit"}
+  document.getElementById('resultScore').textContent=`${score} / ${questions.length} · ${pct}%`;
+  document.getElementById('resultScore').style.color=pct>=70?'#3fb950':pct>=50?'#d29922':'#f85149';
+  document.getElementById('resultRank').textContent=rank;document.getElementById('rankBadge').textContent=icon;
+  const r=document.getElementById('resultBox');r.style.display='block';r.scrollIntoView({behavior:'smooth'});
+}
+function resetQuiz(){buildQuiz();window.scrollTo({top:0,behavior:'smooth'})}
+buildQuiz();
+</script>
+</body>
+</html>

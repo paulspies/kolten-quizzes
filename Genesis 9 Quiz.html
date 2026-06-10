@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✈️ Mission Intel — Genesis 9</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0d1117;color:#e6edf3;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:30px 20px}
+  .header{text-align:center;margin-bottom:36px}
+  .header h1{font-size:1.8rem;color:#58a6ff;letter-spacing:2px;text-transform:uppercase}
+  .header p{color:#8b949e;margin-top:8px;font-size:.95rem}
+  .badge{display:inline-block;background:#1f2d3d;border:1px solid #30363d;border-radius:20px;padding:4px 14px;font-size:.8rem;color:#58a6ff;margin-top:10px;letter-spacing:1px}
+  .question-card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;margin-bottom:20px;transition:border-color .2s}
+  .question-card.correct{border-color:#3fb950}.question-card.wrong{border-color:#f85149}
+  .question-number{font-size:.75rem;color:#58a6ff;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .question-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:18px}
+  .question-text{font-size:1.05rem;line-height:1.6;color:#e6edf3;flex:1}
+  .hint-btn{background:#1f2d3d;border:1px solid #58a6ff;color:#58a6ff;border-radius:50%;width:26px;height:26px;font-size:.8rem;font-weight:bold;cursor:pointer;flex-shrink:0;margin-top:2px;transition:background .15s;display:flex;align-items:center;justify-content:center}
+  .hint-btn:hover{background:#253142}.hint-btn.used{border-color:#d29922;color:#d29922}
+  .hint-box{background:#1c2a1a;border:1px solid #d29922;border-radius:8px;padding:10px 14px;font-size:.88rem;color:#d29922;margin-bottom:14px;display:none}
+  .hint-box.visible{display:block}
+  .options{display:flex;flex-direction:column;gap:10px}
+  .option{background:#1f2d3d;border:1px solid #30363d;border-radius:8px;padding:12px 16px;cursor:pointer;font-size:.95rem;color:#c9d1d9;transition:background .15s,border-color .15s,transform .1s;display:flex;align-items:center;gap:12px}
+  .option:hover:not(.disabled){background:#253142;border-color:#58a6ff;transform:translateX(4px)}
+  .option .letter{background:#0d1117;border:1px solid #30363d;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:bold;flex-shrink:0;color:#58a6ff}
+  .option.selected-correct{background:#1a3a2a;border-color:#3fb950;color:#3fb950}
+  .option.selected-correct .letter{border-color:#3fb950;color:#3fb950}
+  .option.selected-wrong{background:#3a1a1a;border-color:#f85149;color:#f85149}
+  .option.selected-wrong .letter{border-color:#f85149;color:#f85149}
+  .option.show-correct{background:#1a3a2a;border-color:#3fb950;color:#3fb950;opacity:.7}
+  .option.show-correct .letter{border-color:#3fb950;color:#3fb950}
+  .option.disabled{cursor:default}
+  .feedback{margin-top:14px;padding:10px 14px;border-radius:8px;font-size:.9rem;display:none}
+  .feedback.correct{background:#1a3a2a;border:1px solid #3fb950;color:#3fb950;display:block}
+  .feedback.wrong{background:#3a1a1a;border:1px solid #f85149;color:#f85149;display:block}
+  .result-box{background:#161b22;border:2px solid #58a6ff;border-radius:16px;padding:36px;text-align:center;margin-top:30px;display:none}
+  .result-box h2{font-size:1.6rem;color:#58a6ff;margin-bottom:10px}
+  .result-score{font-size:3.5rem;font-weight:bold;margin:16px 0}
+  .result-rank{font-size:1.1rem;color:#8b949e;margin-bottom:24px}
+  .rank-badge{display:inline-block;background:#1f2d3d;border:1px solid #58a6ff;border-radius:12px;padding:8px 20px;font-size:1rem;color:#58a6ff;margin-bottom:24px}
+  .retry-btn{background:#58a6ff;color:#0d1117;border:none;border-radius:8px;padding:12px 32px;font-size:1rem;font-weight:bold;cursor:pointer;letter-spacing:1px;transition:background .2s}
+  .retry-btn:hover{background:#79bbff}
+  .progress-bar-wrap{background:#1f2d3d;border-radius:20px;height:6px;margin-bottom:32px;overflow:hidden}
+  .progress-bar{height:100%;background:#58a6ff;border-radius:20px;width:0%;transition:width .4s ease}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>✈️ Mission Intel</h1>
+  <p>Genesis 9 — The Rainbow Covenant</p>
+  <div class="badge">GENESIS 9 · 12 QUESTIONS · CADET LEVEL</div>
+</div>
+<div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+<div id="quiz"></div>
+<div class="result-box" id="resultBox">
+  <h2>✈️ Debrief Complete</h2>
+  <div class="result-score" id="resultScore"></div>
+  <div class="result-rank" id="resultRank"></div>
+  <div class="rank-badge" id="rankBadge"></div><br>
+  <button class="retry-btn" onclick="resetQuiz()">🔄 Fly Again</button>
+</div>
+<script>
+const questions=[
+  {question:"What did God command Noah and his sons to do after the flood?",options:["Build a city and name it after God","Be fruitful and multiply and fill the earth","Offer sacrifices every year","Plant a garden like Eden"],answer:1,hint:"God repeats the same command He gave Adam in Genesis 1.",feedback:"God said 'Be fruitful and multiply and fill the earth.' This is the same command given to Adam in Genesis 1:28 — the flood was a reset, and humanity got a new beginning. (Genesis 9:1)"},
+  {question:"What new food was Noah now allowed to eat?",options:["Fruit and grain only","Honey and nuts","Every living creature","Only clean animals"],answer:2,hint:"Before the flood, man's diet was plants. God added something new after it.",feedback:"God said 'Every moving thing that lives shall be food for you. As I gave you the green plants, I give you everything.' For the first time, God explicitly gave humans permission to eat meat. (Genesis 9:3)"},
+  {question:"What one restriction did God give about eating meat?",options:["Only clean animals could be eaten","Do not eat the flesh with its life — its blood","Meat must be cooked over fire first","Only eat animals offered in sacrifice first"],answer:1,hint:"The restriction is about something still inside the meat after the animal dies.",feedback:"'You shall not eat flesh with its life, that is, its blood.' God permitted meat-eating but forbade consuming blood — a law that reappears in Leviticus and even in the New Testament. (Genesis 9:4)"},
+  {question:"What does God say is required when someone sheds human blood?",options:["They must leave the community forever","They must offer a sacrifice","By man shall his blood be shed","God Himself will take revenge alone"],answer:2,hint:"Genesis 9:6 establishes the foundation for human justice after the flood.",feedback:"'Whoever sheds the blood of man, by man shall his blood be shed, for God made man in his own image.' This establishes justice — murder carries a consequence because man is made in God's image. (Genesis 9:6)"},
+  {question:"Who did God make the covenant with?",options:["Only Noah and his sons","Noah, his sons, and every living creature on earth","Only human beings","Future generations who would come after Noah"],answer:1,hint:"Genesis 9:9-10 spells out exactly who is covered in this covenant.",feedback:"God said 'I establish my covenant with you and your offspring after you, and with every living creature.' The covenant covered not just humans but birds, livestock, and every beast of the earth. (Genesis 9:9-10)"},
+  {question:"What was God's specific promise in the covenant?",options:["Never to send any disaster again","To give man a longer life","Never again to cut off all flesh by a flood or destroy the earth by flood","To always warn before any judgment"],answer:2,hint:"The promise was specific about one type of destruction — not all disasters.",feedback:"'Never again shall all flesh be cut off by the waters of a flood, and never again shall there be a flood to destroy the earth.' God did not promise no more floods ever — only that a global destroying flood would never happen again. (Genesis 9:11)"},
+  {question:"What is the sign of God's covenant?",options:["The Sabbath day","A pillar of fire","A rainbow in the clouds","An altar of stone"],answer:2,hint:"It appears after rain — you can still see it today.",feedback:"'I have set my bow in the cloud, and it shall be a sign of the covenant between me and the earth.' The rainbow is a reminder — and God says 'I will remember my covenant' when He sees it. (Genesis 9:13)"},
+  {question:"What shameful thing happened with Noah after the flood?",options:["He forgot to worship God","He drank wine and lay uncovered in his tent","He fought with his sons over land","He built a tower to the sky"],answer:1,hint:"Noah planted a vineyard, drank from it, and a family problem followed.",feedback:"Noah planted a vineyard, drank from it, became drunk, and lay uncovered in his tent. This led to a serious incident involving his son Ham. (Genesis 9:20-21)"},
+  {question:"What did Ham do when he found Noah uncovered?",options:["He covered his father quietly and said nothing","He brought Noah water and stayed with him","He saw his father's nakedness and told his brothers outside","He was angry and left the tent"],answer:2,hint:"Ham's response was to go tell others instead of covering his father.",feedback:"Ham saw his father's nakedness and told his two brothers outside. This was considered a serious dishonor — he should have covered his father and said nothing. (Genesis 9:22)"},
+  {question:"What did Shem and Japheth do?",options:["They went in and confronted Ham","They walked in backward with a garment and covered Noah without looking","They stayed outside and refused to help","They went to find their mother"],answer:1,hint:"They were careful to honor their father — literally walking backward.",feedback:"'Shem and Japheth took a garment, laid it on both their shoulders, and walked backward and covered the nakedness of their father. Their faces were turned backward, and they did not see his nakedness.' (Genesis 9:23)"},
+  {question:"What did Noah say when he woke up and discovered what Ham had done?",options:["He forgave Ham immediately","He cursed Canaan, Ham's son, to be a servant","He banished Ham from the family","He said nothing and went back to sleep"],answer:1,hint:"The curse fell not on Ham himself but on Ham's son.",feedback:"Noah said 'Cursed be Canaan; a servant of servants shall he be to his brothers.' The curse fell on Ham's son Canaan — a judgment that shaped the Canaanite people in later Bible history. (Genesis 9:25)"},
+  {question:"How long did Noah live after the flood?",options:["250 years","350 years","450 years","500 years"],answer:1,hint:"Genesis 9:28 gives the exact number.",feedback:"Noah lived 350 years after the flood. He died at age 950, making him one of the longest-lived people in the Bible. (Genesis 9:28-29)"}
+];
+const letters=['A','B','C','D'];
+let answered=0,score=0;
+function buildQuiz(){
+  const c=document.getElementById('quiz');c.innerHTML='';answered=0;score=0;updateProgress();
+  questions.forEach((q,qi)=>{
+    const card=document.createElement('div');card.className='question-card';card.id=`card-${qi}`;
+    card.innerHTML=`<div class="question-number">Question ${qi+1} of ${questions.length}</div>
+      <div class="question-header"><div class="question-text">${q.question}</div>
+      <button class="hint-btn" id="hint-btn-${qi}" onclick="toggleHint(${qi})" title="Need a hint?">?</button></div>
+      <div class="hint-box" id="hint-${qi}">💡 Hint: ${q.hint}</div>
+      <div class="options" id="options-${qi}">${q.options.map((o,oi)=>`
+        <div class="option" id="opt-${qi}-${oi}" onclick="selectAnswer(${qi},${oi})">
+          <span class="letter">${letters[oi]}</span><span>${o}</span></div>`).join('')}</div>
+      <div class="feedback" id="feedback-${qi}"></div>`;
+    c.appendChild(card);
+  });
+  document.getElementById('resultBox').style.display='none';
+}
+function toggleHint(qi){
+  document.getElementById(`hint-${qi}`).classList.toggle('visible');
+  document.getElementById(`hint-btn-${qi}`).classList.toggle('used',document.getElementById(`hint-${qi}`).classList.contains('visible'));
+}
+function selectAnswer(qi,selected){
+  const q=questions[qi];
+  document.getElementById(`options-${qi}`).querySelectorAll('.option').forEach(o=>o.classList.add('disabled'));
+  const correct=q.answer===selected;if(correct)score++;
+  document.getElementById(`opt-${qi}-${selected}`).classList.add(correct?'selected-correct':'selected-wrong');
+  if(!correct)document.getElementById(`opt-${qi}-${q.answer}`).classList.add('show-correct');
+  document.getElementById(`card-${qi}`).classList.add(correct?'correct':'wrong');
+  const f=document.getElementById(`feedback-${qi}`);
+  f.className=`feedback ${correct?'correct':'wrong'}`;
+  f.innerHTML=correct?`✅ Correct! ${q.feedback}`:`❌ Not quite. ${q.feedback}`;
+  answered++;updateProgress();
+  if(answered===questions.length)setTimeout(showResult,800);
+}
+function updateProgress(){document.getElementById('progressBar').style.width=(answered/questions.length*100)+'%'}
+function showResult(){
+  const pct=Math.round(score/questions.length*100);
+  let rank,icon;
+  if(pct>=90){rank="Pilot — Mastered!";icon="🦅 Pilot"}
+  else if(pct>=76){rank="Officer — Strong!";icon="🎖️ Officer"}
+  else if(pct>=61){rank="Airman — Solid!";icon="🌟 Airman"}
+  else if(pct>=41){rank="Cadet — Getting it!";icon="✈️ Cadet"}
+  else{rank="Recruit — Keep going!";icon="🪖 Recruit"}
+  document.getElementById('resultScore').textContent=`${score} / ${questions.length} · ${pct}%`;
+  document.getElementById('resultScore').style.color=pct>=70?'#3fb950':pct>=50?'#d29922':'#f85149';
+  document.getElementById('resultRank').textContent=rank;document.getElementById('rankBadge').textContent=icon;
+  const r=document.getElementById('resultBox');r.style.display='block';r.scrollIntoView({behavior:'smooth'});
+}
+function resetQuiz(){buildQuiz();window.scrollTo({top:0,behavior:'smooth'})}
+buildQuiz();
+</script>
+</body>
+</html>

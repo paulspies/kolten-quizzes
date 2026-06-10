@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✈️ Mission Intel — Nouns</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0d1117;color:#e6edf3;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:30px 20px}
+  .header{text-align:center;margin-bottom:36px}
+  .header h1{font-size:1.8rem;color:#58a6ff;letter-spacing:2px;text-transform:uppercase}
+  .header p{color:#8b949e;margin-top:8px;font-size:.95rem}
+  .badge{display:inline-block;background:#1f2d3d;border:1px solid #30363d;border-radius:20px;padding:4px 14px;font-size:.8rem;color:#58a6ff;margin-top:10px;letter-spacing:1px}
+  .question-card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;margin-bottom:20px;transition:border-color .2s}
+  .question-card.correct{border-color:#3fb950}.question-card.wrong{border-color:#f85149}
+  .question-number{font-size:.75rem;color:#58a6ff;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .question-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:18px}
+  .question-text{font-size:1.05rem;line-height:1.6;color:#e6edf3;flex:1}
+  .hint-btn{background:#1f2d3d;border:1px solid #58a6ff;color:#58a6ff;border-radius:50%;width:26px;height:26px;font-size:.8rem;font-weight:bold;cursor:pointer;flex-shrink:0;margin-top:2px;transition:background .15s;display:flex;align-items:center;justify-content:center}
+  .hint-btn:hover{background:#253142}.hint-btn.used{border-color:#d29922;color:#d29922}
+  .hint-box{background:#1c2a1a;border:1px solid #d29922;border-radius:8px;padding:10px 14px;font-size:.88rem;color:#d29922;margin-bottom:14px;display:none}
+  .hint-box.visible{display:block}
+  .options{display:flex;flex-direction:column;gap:10px}
+  .option{background:#1f2d3d;border:1px solid #30363d;border-radius:8px;padding:12px 16px;cursor:pointer;font-size:.95rem;color:#c9d1d9;transition:background .15s,border-color .15s,transform .1s;display:flex;align-items:center;gap:12px}
+  .option:hover:not(.disabled){background:#253142;border-color:#58a6ff;transform:translateX(4px)}
+  .option .letter{background:#0d1117;border:1px solid #30363d;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:bold;flex-shrink:0;color:#58a6ff}
+  .option.selected-correct{background:#1a3a2a;border-color:#3fb950;color:#3fb950}
+  .option.selected-correct .letter{border-color:#3fb950;color:#3fb950}
+  .option.selected-wrong{background:#3a1a1a;border-color:#f85149;color:#f85149}
+  .option.selected-wrong .letter{border-color:#f85149;color:#f85149}
+  .option.show-correct{background:#1a3a2a;border-color:#3fb950;color:#3fb950;opacity:.7}
+  .option.show-correct .letter{border-color:#3fb950;color:#3fb950}
+  .option.disabled{cursor:default}
+  .feedback{margin-top:14px;padding:10px 14px;border-radius:8px;font-size:.9rem;display:none}
+  .feedback.correct{background:#1a3a2a;border:1px solid #3fb950;color:#3fb950;display:block}
+  .feedback.wrong{background:#3a1a1a;border:1px solid #f85149;color:#f85149;display:block}
+  .result-box{background:#161b22;border:2px solid #58a6ff;border-radius:16px;padding:36px;text-align:center;margin-top:30px;display:none}
+  .result-box h2{font-size:1.6rem;color:#58a6ff;margin-bottom:10px}
+  .result-score{font-size:3.5rem;font-weight:bold;margin:16px 0}
+  .result-rank{font-size:1.1rem;color:#8b949e;margin-bottom:24px}
+  .rank-badge{display:inline-block;background:#1f2d3d;border:1px solid #58a6ff;border-radius:12px;padding:8px 20px;font-size:1rem;color:#58a6ff;margin-bottom:24px}
+  .retry-btn{background:#58a6ff;color:#0d1117;border:none;border-radius:8px;padding:12px 32px;font-size:1rem;font-weight:bold;cursor:pointer;letter-spacing:1px;transition:background .2s}
+  .retry-btn:hover{background:#79bbff}
+  .progress-bar-wrap{background:#1f2d3d;border-radius:20px;height:6px;margin-bottom:32px;overflow:hidden}
+  .progress-bar{height:100%;background:#58a6ff;border-radius:20px;width:0%;transition:width .4s ease}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>✈️ Mission Intel</h1>
+  <p>Introduction to Nouns — Person, Place, Thing, or Idea</p>
+  <div class="badge">ELA · 12 QUESTIONS · CADET LEVEL</div>
+</div>
+<div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+<div id="quiz"></div>
+<div class="result-box" id="resultBox">
+  <h2>✈️ Debrief Complete</h2>
+  <div class="result-score" id="resultScore"></div>
+  <div class="result-rank" id="resultRank"></div>
+  <div class="rank-badge" id="rankBadge"></div><br>
+  <button class="retry-btn" onclick="resetQuiz()">🔄 Fly Again</button>
+</div>
+<script>
+const questions=[
+  {question:"What is a noun?",options:["A word that describes another word","A word that names a person, place, thing, or idea","A word that shows action","A word that connects two sentences"],answer:1,hint:"Think about the four categories of things a noun can name.",feedback:"A noun names a person, place, thing, or idea. These four categories cover everything a noun can be — from 'teacher' to 'Texas' to 'airplane' to 'freedom.'"},
+  {question:"Which of the following is a PERSON noun?",options:["Mountain","Teacher","Quickly","Happiness"],answer:1,hint:"A person noun names a human being — someone you could meet.",feedback:"'Teacher' is a person noun — it names a human being. 'Mountain' is a place, 'happiness' is an idea, and 'quickly' is not a noun at all."},
+  {question:"Which of the following is a PLACE noun?",options:["Dog","Jumping","School","Anger"],answer:2,hint:"A place noun names somewhere you can go.",feedback:"'School' is a place noun — it names a location you can visit. 'Dog' is a thing, 'jumping' is an action, and 'anger' is an idea."},
+  {question:"Which of the following is a THING noun?",options:["Love","Running","Beautiful","Airplane"],answer:3,hint:"A thing noun names a physical object you can see or touch.",feedback:"'Airplane' is a thing noun — it is a physical object. 'Love' is an idea, 'running' is an action (verb), and 'beautiful' is a description (adjective)."},
+  {question:"Which of the following is an IDEA noun?",options:["Pencil","Park","Freedom","Swim"],answer:2,hint:"An idea noun names something you cannot see or touch — it exists in the mind or spirit.",feedback:"'Freedom' is an idea noun — you cannot hold it or point to it, but it is real. 'Pencil' is a thing, 'park' is a place, and 'swim' is an action."},
+  {question:"Which word in this sentence is a noun? \"The dog ran fast across the yard.\"",options:["Ran","Fast","Across","Dog"],answer:3,hint:"Find the word that names a thing. It is the subject of the sentence.",feedback:"'Dog' is the noun — it names an animal (a thing). 'Ran' is a verb, 'fast' is an adverb, and 'across' is a preposition."},
+  {question:"How many nouns are in this sentence? \"The pilot flew his plane over the ocean.\"",options:["One","Two","Three","Four"],answer:2,hint:"Find every person, place, or thing. Count carefully — there are more than two.",feedback:"Three nouns: 'pilot' (person), 'plane' (thing), and 'ocean' (place). 'Flew' is a verb and 'over' is a preposition."},
+  {question:"Which of these words is NOT a noun?",options:["River","Sister","Quickly","City"],answer:2,hint:"Three of these name something. One only describes how an action happens.",feedback:"'Quickly' is an adverb — it describes how something is done. 'River,' 'sister,' and 'city' are all nouns."},
+  {question:"Which word is a noun in this group: Beautiful, Kindness, Sleep, Loudly?",options:["Beautiful","Loudly","Sleep","Kindness"],answer:3,hint:"One of these names an idea — a quality or character trait.",feedback:"'Kindness' is an idea noun — it names a quality of character. 'Beautiful' is an adjective, 'loudly' is an adverb, and 'sleep' here acts as a verb."},
+  {question:"What makes a noun a PROPER noun?",options:["It is longer than three letters","It names something specific and is always capitalized","It names a physical object you can touch","It is used at the beginning of a sentence"],answer:1,hint:"Think about what makes 'Texas' different from 'state.'",feedback:"A proper noun names a specific person, place, or thing — and is always capitalized. 'State' is a common noun. 'Texas' is a proper noun because it names one specific state."},
+  {question:"Which of the following is a PROPER noun?",options:["Dog","Texas","City","Friend"],answer:1,hint:"Proper nouns are always capitalized — even in the middle of a sentence.",feedback:"'Texas' is a proper noun — it names one specific state and is always capitalized. 'Dog,' 'city,' and 'friend' are common nouns that refer to general categories."},
+  {question:"Which sentence contains a proper noun?",options:["The dog ran to the park.","A pilot flew over the mountain.","Kolten opened his notebook.","The student answered the question."],answer:2,hint:"Look for a noun that names a specific person — and is capitalized.",feedback:"'Kolten' in sentence C is a proper noun — it names a specific person. The other sentences use only common nouns (dog, park, pilot, mountain, student, question)."}
+];
+const letters=['A','B','C','D'];
+let answered=0,score=0;
+function buildQuiz(){
+  const c=document.getElementById('quiz');c.innerHTML='';answered=0;score=0;updateProgress();
+  questions.forEach((q,qi)=>{
+    const card=document.createElement('div');card.className='question-card';card.id=`card-${qi}`;
+    card.innerHTML=`<div class="question-number">Question ${qi+1} of ${questions.length}</div>
+      <div class="question-header"><div class="question-text">${q.question}</div>
+      <button class="hint-btn" id="hint-btn-${qi}" onclick="toggleHint(${qi})" title="Need a hint?">?</button></div>
+      <div class="hint-box" id="hint-${qi}">💡 Hint: ${q.hint}</div>
+      <div class="options" id="options-${qi}">${q.options.map((o,oi)=>`
+        <div class="option" id="opt-${qi}-${oi}" onclick="selectAnswer(${qi},${oi})">
+          <span class="letter">${letters[oi]}</span><span>${o}</span></div>`).join('')}</div>
+      <div class="feedback" id="feedback-${qi}"></div>`;
+    c.appendChild(card);
+  });
+  document.getElementById('resultBox').style.display='none';
+}
+function toggleHint(qi){
+  document.getElementById(`hint-${qi}`).classList.toggle('visible');
+  document.getElementById(`hint-btn-${qi}`).classList.toggle('used',document.getElementById(`hint-${qi}`).classList.contains('visible'));
+}
+function selectAnswer(qi,selected){
+  const q=questions[qi];
+  document.getElementById(`options-${qi}`).querySelectorAll('.option').forEach(o=>o.classList.add('disabled'));
+  const correct=q.answer===selected;if(correct)score++;
+  document.getElementById(`opt-${qi}-${selected}`).classList.add(correct?'selected-correct':'selected-wrong');
+  if(!correct)document.getElementById(`opt-${qi}-${q.answer}`).classList.add('show-correct');
+  document.getElementById(`card-${qi}`).classList.add(correct?'correct':'wrong');
+  const f=document.getElementById(`feedback-${qi}`);
+  f.className=`feedback ${correct?'correct':'wrong'}`;
+  f.innerHTML=correct?`✅ Correct! ${q.feedback}`:`❌ Not quite. ${q.feedback}`;
+  answered++;updateProgress();
+  if(answered===questions.length)setTimeout(showResult,800);
+}
+function updateProgress(){document.getElementById('progressBar').style.width=(answered/questions.length*100)+'%'}
+function showResult(){
+  const pct=Math.round(score/questions.length*100);
+  let rank,icon;
+  if(pct>=90){rank="Pilot — Mastered!";icon="🦅 Pilot"}
+  else if(pct>=76){rank="Officer — Strong!";icon="🎖️ Officer"}
+  else if(pct>=61){rank="Airman — Solid!";icon="🌟 Airman"}
+  else if(pct>=41){rank="Cadet — Getting it!";icon="✈️ Cadet"}
+  else{rank="Recruit — Keep going!";icon="🪖 Recruit"}
+  document.getElementById('resultScore').textContent=`${score} / ${questions.length} · ${pct}%`;
+  document.getElementById('resultScore').style.color=pct>=70?'#3fb950':pct>=50?'#d29922':'#f85149';
+  document.getElementById('resultRank').textContent=rank;document.getElementById('rankBadge').textContent=icon;
+  const r=document.getElementById('resultBox');r.style.display='block';r.scrollIntoView({behavior:'smooth'});
+}
+function resetQuiz(){buildQuiz();window.scrollTo({top:0,behavior:'smooth'})}
+buildQuiz();
+</script>
+</body>
+</html>

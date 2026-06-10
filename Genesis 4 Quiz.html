@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✈️ Mission Intel — Genesis 4</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0d1117;color:#e6edf3;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:30px 20px}
+  .header{text-align:center;margin-bottom:36px}
+  .header h1{font-size:1.8rem;color:#58a6ff;letter-spacing:2px;text-transform:uppercase}
+  .header p{color:#8b949e;margin-top:8px;font-size:.95rem}
+  .badge{display:inline-block;background:#1f2d3d;border:1px solid #30363d;border-radius:20px;padding:4px 14px;font-size:.8rem;color:#58a6ff;margin-top:10px;letter-spacing:1px}
+  .question-card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;margin-bottom:20px;transition:border-color .2s}
+  .question-card.correct{border-color:#3fb950}.question-card.wrong{border-color:#f85149}
+  .question-number{font-size:.75rem;color:#58a6ff;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .question-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:18px}
+  .question-text{font-size:1.05rem;line-height:1.6;color:#e6edf3;flex:1}
+  .hint-btn{background:#1f2d3d;border:1px solid #58a6ff;color:#58a6ff;border-radius:50%;width:26px;height:26px;font-size:.8rem;font-weight:bold;cursor:pointer;flex-shrink:0;margin-top:2px;transition:background .15s;display:flex;align-items:center;justify-content:center}
+  .hint-btn:hover{background:#253142}.hint-btn.used{border-color:#d29922;color:#d29922}
+  .hint-box{background:#1c2a1a;border:1px solid #d29922;border-radius:8px;padding:10px 14px;font-size:.88rem;color:#d29922;margin-bottom:14px;display:none}
+  .hint-box.visible{display:block}
+  .options{display:flex;flex-direction:column;gap:10px}
+  .option{background:#1f2d3d;border:1px solid #30363d;border-radius:8px;padding:12px 16px;cursor:pointer;font-size:.95rem;color:#c9d1d9;transition:background .15s,border-color .15s,transform .1s;display:flex;align-items:center;gap:12px}
+  .option:hover:not(.disabled){background:#253142;border-color:#58a6ff;transform:translateX(4px)}
+  .option .letter{background:#0d1117;border:1px solid #30363d;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:bold;flex-shrink:0;color:#58a6ff}
+  .option.selected-correct{background:#1a3a2a;border-color:#3fb950;color:#3fb950}
+  .option.selected-correct .letter{border-color:#3fb950;color:#3fb950}
+  .option.selected-wrong{background:#3a1a1a;border-color:#f85149;color:#f85149}
+  .option.selected-wrong .letter{border-color:#f85149;color:#f85149}
+  .option.show-correct{background:#1a3a2a;border-color:#3fb950;color:#3fb950;opacity:.7}
+  .option.show-correct .letter{border-color:#3fb950;color:#3fb950}
+  .option.disabled{cursor:default}
+  .feedback{margin-top:14px;padding:10px 14px;border-radius:8px;font-size:.9rem;display:none}
+  .feedback.correct{background:#1a3a2a;border:1px solid #3fb950;color:#3fb950;display:block}
+  .feedback.wrong{background:#3a1a1a;border:1px solid #f85149;color:#f85149;display:block}
+  .result-box{background:#161b22;border:2px solid #58a6ff;border-radius:16px;padding:36px;text-align:center;margin-top:30px;display:none}
+  .result-box h2{font-size:1.6rem;color:#58a6ff;margin-bottom:10px}
+  .result-score{font-size:3.5rem;font-weight:bold;margin:16px 0}
+  .result-rank{font-size:1.1rem;color:#8b949e;margin-bottom:24px}
+  .rank-badge{display:inline-block;background:#1f2d3d;border:1px solid #58a6ff;border-radius:12px;padding:8px 20px;font-size:1rem;color:#58a6ff;margin-bottom:24px}
+  .retry-btn{background:#58a6ff;color:#0d1117;border:none;border-radius:8px;padding:12px 32px;font-size:1rem;font-weight:bold;cursor:pointer;letter-spacing:1px;transition:background .2s}
+  .retry-btn:hover{background:#79bbff}
+  .progress-bar-wrap{background:#1f2d3d;border-radius:20px;height:6px;margin-bottom:32px;overflow:hidden}
+  .progress-bar{height:100%;background:#58a6ff;border-radius:20px;width:0%;transition:width .4s ease}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>✈️ Mission Intel</h1>
+  <p>Genesis 4 — Cain and Abel</p>
+  <div class="badge">GENESIS 4 · 12 QUESTIONS · CADET LEVEL</div>
+</div>
+<div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+<div id="quiz"></div>
+<div class="result-box" id="resultBox">
+  <h2>✈️ Debrief Complete</h2>
+  <div class="result-score" id="resultScore"></div>
+  <div class="result-rank" id="resultRank"></div>
+  <div class="rank-badge" id="rankBadge"></div><br>
+  <button class="retry-btn" onclick="resetQuiz()">🔄 Fly Again</button>
+</div>
+<script>
+const questions=[
+  {question:"What offering did Cain bring to God?",options:["Firstborn of his flock","Grain and oil","Fruit of the ground","A lamb without blemish"],answer:2,hint:"Cain was a farmer. His offering came from what he grew.",feedback:"Cain was a worker of the ground, so he brought an offering of the fruit of the ground to the Lord. (Genesis 4:3)"},
+  {question:"What offering did Abel bring to God?",options:["Grain from his field","Firstborn of his flock and their fat portions","A burnt offering of wheat","Silver and gold"],answer:1,hint:"Abel was a shepherd. He gave from the very best of what he had.",feedback:"Abel brought the firstborn of his flock and their fat portions — the best of what he had. God had regard for Abel's offering but not for Cain's. (Genesis 4:4)"},
+  {question:"Why was God pleased with Abel's offering but not Cain's?",options:["Abel was older so his offering counted more","God preferred animals over crops","Abel gave the firstborn and best portions with a right heart","Cain brought the wrong amount"],answer:2,hint:"Look at what Abel gave specifically — the firstborn and the fat portions. These were the choicest parts.",feedback:"Abel gave the firstborn and fat portions — the very best. The text implies Cain did not give his best, and his heart was not right behind it. God looks at both the offering and the heart. (Genesis 4:3-5)"},
+  {question:"What was Cain's reaction when God did not accept his offering?",options:["He prayed and asked God why","He worked harder to bring a better offering","His face fell and he was very angry","He left and never returned"],answer:2,hint:"Two reactions are described in Genesis 4:5 — one shows on the face, one is inside him.",feedback:"Cain was very angry and his face fell. God immediately noticed and spoke to him about it before anything happened. (Genesis 4:5)"},
+  {question:"What was God's warning to Cain before Cain acted?",options:["You will be cursed if you harm your brother","If you do not do well, sin is crouching at the door — you must rule over it","Leave this place before you do something wrong","Give a better offering or I will not speak to you"],answer:1,hint:"God gave Cain a direct choice and a direct warning about what happens if he makes the wrong one.",feedback:"God said 'If you do well, will you not be accepted? If you do not do well, sin is crouching at the door. Its desire is for you, but you must rule over it.' (Genesis 4:7)"},
+  {question:"What did Cain say to Abel just before killing him?",options:["I am going to take what is mine","God is not fair to me","Let us go out to the field","Your offering was better than mine"],answer:2,hint:"It was a simple invitation — to a place where no one else was watching.",feedback:"Cain said to Abel 'Let us go out to the field.' It was in the field that Cain rose up against his brother and killed him. (Genesis 4:8)"},
+  {question:"What did God ask Cain after Abel was killed?",options:["Why have you done this evil thing?","Where is Abel your brother?","What have you done to my servant?","How will you answer for this sin?"],answer:1,hint:"God asked a question He already knew the answer to — just as He had with Adam and Eve in the garden.",feedback:"God asked 'Where is Abel your brother?' Cain answered 'I do not know. Am I my brother's keeper?' This was a lie — Cain knew exactly what had happened. (Genesis 4:9)"},
+  {question:"What punishment did God give Cain?",options:["He would be put to death immediately","The ground would no longer produce for him and he would be a restless wanderer","He would be enslaved by his brothers","He would be separated from God forever"],answer:1,hint:"Two parts to this punishment — one about farming, one about never having a permanent home.",feedback:"God said the ground would no longer yield its strength to Cain, and he would be a fugitive and wanderer on the earth. He could no longer farm or settle anywhere permanently. (Genesis 4:11-12)"},
+  {question:"What did God do to protect Cain from being killed by others?",options:["Gave him a sword to defend himself","Sent an angel to guard him","Put a mark on Cain so no one would kill him","Gave him a city with high walls"],answer:2,hint:"God put something on Cain that served as a warning to anyone who might harm him.",feedback:"God put a mark on Cain so that no one who found him would strike him down. Despite Cain's sin, God still showed mercy in protecting his life. (Genesis 4:15)"},
+  {question:"Where did Cain go after being sent away from God's presence?",options:["The land of Nod, east of Eden","The mountains of Ararat","A city called Babel","The wilderness beyond the Jordan"],answer:0,hint:"The name of the land means 'wandering' — which fits the punishment God gave him.",feedback:"Cain went away from the presence of the Lord and settled in the land of Nod, east of Eden. The name 'Nod' comes from a Hebrew word meaning 'wandering.' (Genesis 4:16)"},
+  {question:"What did Cain name the city he built?",options:["Babel","Eden","Enoch","Seth"],answer:2,hint:"He named it after his son.",feedback:"Cain built a city and called its name Enoch, after his son Enoch. This is the first city mentioned in the Bible. (Genesis 4:17)"},
+  {question:"Who was the son God gave Adam and Eve to replace Abel?",options:["Enoch","Lamech","Seth","Cain"],answer:2,hint:"Eve said 'God has appointed for me another offspring instead of Abel, for Cain killed him.' What did she name this son?",feedback:"Adam knew his wife again and she bore a son and called his name Seth. Eve said 'God has appointed for me another offspring instead of Abel.' (Genesis 4:25)"}
+];
+const letters=['A','B','C','D'];
+let answered=0,score=0;
+function buildQuiz(){
+  const c=document.getElementById('quiz');c.innerHTML='';answered=0;score=0;updateProgress();
+  questions.forEach((q,qi)=>{
+    const card=document.createElement('div');card.className='question-card';card.id=`card-${qi}`;
+    card.innerHTML=`<div class="question-number">Question ${qi+1} of ${questions.length}</div>
+      <div class="question-header"><div class="question-text">${q.question}</div>
+      <button class="hint-btn" id="hint-btn-${qi}" onclick="toggleHint(${qi})" title="Need a hint?">?</button></div>
+      <div class="hint-box" id="hint-${qi}">💡 Hint: ${q.hint}</div>
+      <div class="options" id="options-${qi}">${q.options.map((o,oi)=>`
+        <div class="option" id="opt-${qi}-${oi}" onclick="selectAnswer(${qi},${oi})">
+          <span class="letter">${letters[oi]}</span><span>${o}</span></div>`).join('')}</div>
+      <div class="feedback" id="feedback-${qi}"></div>`;
+    c.appendChild(card);
+  });
+  document.getElementById('resultBox').style.display='none';
+}
+function toggleHint(qi){
+  document.getElementById(`hint-${qi}`).classList.toggle('visible');
+  document.getElementById(`hint-btn-${qi}`).classList.toggle('used',document.getElementById(`hint-${qi}`).classList.contains('visible'));
+}
+function selectAnswer(qi,selected){
+  const q=questions[qi];
+  document.getElementById(`options-${qi}`).querySelectorAll('.option').forEach(o=>o.classList.add('disabled'));
+  const correct=q.answer===selected;if(correct)score++;
+  document.getElementById(`opt-${qi}-${selected}`).classList.add(correct?'selected-correct':'selected-wrong');
+  if(!correct)document.getElementById(`opt-${qi}-${q.answer}`).classList.add('show-correct');
+  document.getElementById(`card-${qi}`).classList.add(correct?'correct':'wrong');
+  const f=document.getElementById(`feedback-${qi}`);
+  f.className=`feedback ${correct?'correct':'wrong'}`;
+  f.innerHTML=correct?`✅ Correct! ${q.feedback}`:`❌ Not quite. ${q.feedback}`;
+  answered++;updateProgress();
+  if(answered===questions.length)setTimeout(showResult,800);
+}
+function updateProgress(){document.getElementById('progressBar').style.width=(answered/questions.length*100)+'%'}
+function showResult(){
+  const pct=Math.round(score/questions.length*100);
+  let rank,icon;
+  if(pct>=90){rank="Pilot — Mastered!";icon="🦅 Pilot"}
+  else if(pct>=76){rank="Officer — Strong!";icon="🎖️ Officer"}
+  else if(pct>=61){rank="Airman — Solid!";icon="🌟 Airman"}
+  else if(pct>=41){rank="Cadet — Getting it!";icon="✈️ Cadet"}
+  else{rank="Recruit — Keep going!";icon="🪖 Recruit"}
+  document.getElementById('resultScore').textContent=`${score} / ${questions.length} · ${pct}%`;
+  document.getElementById('resultScore').style.color=pct>=70?'#3fb950':pct>=50?'#d29922':'#f85149';
+  document.getElementById('resultRank').textContent=rank;document.getElementById('rankBadge').textContent=icon;
+  const r=document.getElementById('resultBox');r.style.display='block';r.scrollIntoView({behavior:'smooth'});
+}
+function resetQuiz(){buildQuiz();window.scrollTo({top:0,behavior:'smooth'})}
+buildQuiz();
+</script>
+</body>
+</html>
