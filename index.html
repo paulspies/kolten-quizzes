@@ -8,98 +8,128 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #0a0f1e;
+      background: #080d1a;
       color: #e8eaf0;
       min-height: 100vh;
-      padding: 24px 16px 40px;
+      padding: 20px 14px 48px;
     }
+
+    /* HEADER */
     header {
       text-align: center;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
+      padding-top: 8px;
     }
-    header .badge {
-      font-size: 48px;
-      display: block;
-      margin-bottom: 8px;
-    }
-    header h1 {
-      font-size: 1.8rem;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: #fff;
-    }
-    header p {
-      margin-top: 6px;
-      font-size: 0.95rem;
-      color: #8892b0;
-    }
-    .section {
+    header .badge { font-size: 44px; display: block; margin-bottom: 6px; }
+    header h1 { font-size: 1.7rem; font-weight: 800; letter-spacing: 1px; color: #fff; }
+    header p { margin-top: 5px; font-size: 0.88rem; color: #5a7aad; }
+
+    /* WEEK BANNER */
+    .week-banner {
       max-width: 600px;
       margin: 0 auto 28px;
+      background: #0d1f3c;
+      border: 1px solid #1e3a6a;
+      border-radius: 12px;
+      padding: 14px 18px;
     }
-    .section-title {
-      font-size: 0.75rem;
+    .week-banner h2 {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #3b6bb5;
+      margin-bottom: 10px;
+    }
+    .subject-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+    .chip {
+      background: #162040;
+      border: 1px solid #1e3a6a;
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      color: #a8bbd8;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* SUBJECT SECTIONS */
+    .section {
+      max-width: 600px;
+      margin: 0 auto 24px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      padding: 0 2px;
+    }
+    .section-icon { font-size: 1.2rem; }
+    .section-label {
+      font-size: 0.72rem;
       font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
       color: #5a7aad;
-      margin-bottom: 10px;
-      padding-left: 4px;
     }
-    .grid {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .section-sublabel {
+      font-size: 0.72rem;
+      color: #2e4a7a;
+      margin-left: 2px;
     }
+
+    /* CARDS */
+    .grid { display: flex; flex-direction: column; gap: 7px; }
     a.card {
       display: flex;
       align-items: center;
-      gap: 14px;
-      background: #111827;
-      border: 1px solid #1e2d45;
+      gap: 13px;
+      background: #0e1624;
+      border: 1px solid #1a2840;
       border-radius: 10px;
-      padding: 14px 16px;
+      padding: 13px 15px;
       text-decoration: none;
       color: #e8eaf0;
       transition: background 0.15s, border-color 0.15s, transform 0.1s;
     }
-    a.card:hover {
-      background: #162033;
-      border-color: #3b6bb5;
-      transform: translateX(3px);
-    }
-    a.card:active {
-      transform: translateX(1px);
-    }
-    .card-icon {
-      font-size: 22px;
-      width: 36px;
+    a.card:hover { background: #132034; border-color: #3b6bb5; transform: translateX(3px); }
+    a.card:active { transform: translateX(1px); }
+    .card-icon { font-size: 20px; width: 32px; text-align: center; flex-shrink: 0; }
+    .card-text { flex: 1; }
+    .card-title { font-size: 0.9rem; font-weight: 600; }
+    .card-sub { font-size: 0.75rem; color: #4a6a9a; margin-top: 2px; }
+    .card-arrow { color: #2e4a7a; font-size: 1.1rem; flex-shrink: 0; }
+
+    /* EMPTY / COMING SOON */
+    .coming-soon {
+      background: #0a1020;
+      border: 1px dashed #1a2840;
+      border-radius: 10px;
+      padding: 16px;
       text-align: center;
-      flex-shrink: 0;
+      font-size: 0.8rem;
+      color: #2e4a7a;
     }
-    .card-text {
-      flex: 1;
+
+    /* DIVIDER */
+    hr {
+      max-width: 600px;
+      margin: 0 auto 24px;
+      border: none;
+      border-top: 1px solid #111d30;
     }
-    .card-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #e8eaf0;
-    }
-    .card-sub {
-      font-size: 0.78rem;
-      color: #5a7aad;
-      margin-top: 2px;
-    }
-    .card-arrow {
-      color: #3b6bb5;
-      font-size: 1rem;
-      flex-shrink: 0;
-    }
+
     footer {
       text-align: center;
-      font-size: 0.75rem;
-      color: #3b4a6b;
-      margin-top: 16px;
+      font-size: 0.72rem;
+      color: #1e3050;
+      margin-top: 12px;
     }
   </style>
 </head>
@@ -108,12 +138,29 @@
 <header>
   <span class="badge">✈️</span>
   <h1>Kolten's Flight School</h1>
-  <p>Mission Hub — pick your briefing and launch</p>
+  <p>Mission Hub · Pick your briefing and launch</p>
 </header>
+
+<!-- WEEK BANNER -->
+<div class="week-banner">
+  <h2>🗓️ This Week's Subjects</h2>
+  <div class="subject-chips">
+    <span class="chip">📻 ELA</span>
+    <span class="chip">🧭 Math</span>
+    <span class="chip">📖 Biblical History</span>
+    <span class="chip">🔬 Creation Science</span>
+    <span class="chip">💻 Coding</span>
+    <span class="chip">✍️ Writing</span>
+  </div>
+</div>
 
 <!-- ELA -->
 <div class="section">
-  <div class="section-title">📻 Radio Comms — ELA</div>
+  <div class="section-header">
+    <span class="section-icon">📻</span>
+    <span class="section-label">ELA</span>
+    <span class="section-sublabel">— Radio Comms</span>
+  </div>
   <div class="grid">
     <a class="card" href="Authors%20Purpose%20Quiz.html">
       <span class="card-icon">🎯</span>
@@ -135,7 +182,7 @@
       <span class="card-icon">📝</span>
       <div class="card-text">
         <div class="card-title">Nouns Quiz</div>
-        <div class="card-sub">Identify nouns — 12 questions with hints</div>
+        <div class="card-sub">12 questions with hints</div>
       </div>
       <span class="card-arrow">›</span>
     </a>
@@ -143,7 +190,7 @@
       <span class="card-icon">🔤</span>
       <div class="card-text">
         <div class="card-title">Common vs Proper Nouns Sorter</div>
-        <div class="card-sub">Drag and sort by noun type</div>
+        <div class="card-sub">Sort by noun type</div>
       </div>
       <span class="card-arrow">›</span>
     </a>
@@ -166,9 +213,15 @@
   </div>
 </div>
 
-<!-- Math -->
+<hr />
+
+<!-- MATH -->
 <div class="section">
-  <div class="section-title">🧭 Navigator Training — Math</div>
+  <div class="section-header">
+    <span class="section-icon">🧭</span>
+    <span class="section-label">Math</span>
+    <span class="section-sublabel">— Navigator Training</span>
+  </div>
   <div class="grid">
     <a class="card" href="Multiplication%204s%20Quiz.html">
       <span class="card-icon">✖️</span>
@@ -210,23 +263,30 @@
       </div>
       <span class="card-arrow">›</span>
     </a>
+    <div class="coming-soon">8s · 9s · 10s · 11s · 12s — coming as we build them</div>
   </div>
 </div>
 
-<!-- History -->
+<hr />
+
+<!-- BIBLICAL HISTORY -->
 <div class="section">
-  <div class="section-title">📡 Intel Briefing — Biblical History</div>
+  <div class="section-header">
+    <span class="section-icon">📖</span>
+    <span class="section-label">Biblical History</span>
+    <span class="section-sublabel">— Intel Briefing</span>
+  </div>
   <div class="grid">
     <a class="card" href="Genesis%201%20Quiz.html">
-      <span class="card-icon">📖</span>
+      <span class="card-icon">🌅</span>
       <div class="card-text">
         <div class="card-title">Genesis 1 Quiz</div>
-        <div class="card-sub">Creation — Day 1 through 7</div>
+        <div class="card-sub">Creation — Days 1 through 7</div>
       </div>
       <span class="card-arrow">›</span>
     </a>
     <a class="card" href="Genesis%202%20Quiz.html">
-      <span class="card-icon">📖</span>
+      <span class="card-icon">🌿</span>
       <div class="card-text">
         <div class="card-title">Genesis 2 Quiz</div>
         <div class="card-sub">Adam, Eden, and Eve</div>
@@ -234,7 +294,7 @@
       <span class="card-arrow">›</span>
     </a>
     <a class="card" href="Genesis%203%20Quiz.html">
-      <span class="card-icon">📖</span>
+      <span class="card-icon">🍎</span>
       <div class="card-text">
         <div class="card-title">Genesis 3 Quiz</div>
         <div class="card-sub">The Fall</div>
@@ -261,12 +321,12 @@
       <span class="card-icon">📖</span>
       <div class="card-text">
         <div class="card-title">Genesis 5–6 Quiz</div>
-        <div class="card-sub">Genealogy + Noah's calling</div>
+        <div class="card-sub">Genealogy and Noah's calling</div>
       </div>
       <span class="card-arrow">›</span>
     </a>
     <a class="card" href="Genesis%207-8%20Quiz.html">
-      <span class="card-icon">📖</span>
+      <span class="card-icon">🌊</span>
       <div class="card-text">
         <div class="card-title">Genesis 7–8 Quiz</div>
         <div class="card-sub">The Flood</div>
@@ -274,7 +334,7 @@
       <span class="card-arrow">›</span>
     </a>
     <a class="card" href="Genesis%209%20Quiz.html">
-      <span class="card-icon">📖</span>
+      <span class="card-icon">🌈</span>
       <div class="card-text">
         <div class="card-title">Genesis 9 Quiz</div>
         <div class="card-sub">The Rainbow Covenant</div>
@@ -284,9 +344,84 @@
   </div>
 </div>
 
-<footer>
-  ✈️ Kolten's Flight School · Summer 2026
-</footer>
+<hr />
+
+<!-- CREATION SCIENCE -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-icon">🔬</span>
+    <span class="section-label">Creation Science</span>
+    <span class="section-sublabel">— Lab Command</span>
+  </div>
+  <div class="coming-soon">
+    Quizzes coming soon — check back each week
+  </div>
+</div>
+
+<hr />
+
+<!-- CODING -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-icon">💻</span>
+    <span class="section-label">Coding</span>
+    <span class="section-sublabel">— boot.dev</span>
+  </div>
+  <div class="grid">
+    <a class="card" href="https://boot.dev" target="_blank" rel="noopener">
+      <span class="card-icon">🚀</span>
+      <div class="card-text">
+        <div class="card-title">Open boot.dev</div>
+        <div class="card-sub">Continue your course</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <div class="coming-soon">Coding checkpoint quizzes — added as you progress</div>
+  </div>
+</div>
+
+<hr />
+
+<!-- WRITING -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-icon">✍️</span>
+    <span class="section-label">Writing</span>
+    <span class="section-sublabel">— Journal · Grammar · Spelling · Book Reports</span>
+  </div>
+  <div class="grid">
+
+    <!-- SPELLING — weekly quizzes -->
+    <a class="card" href="Spelling%20Week%201%20Quiz.html">
+      <span class="card-icon">🔡</span>
+      <div class="card-text">
+        <div class="card-title">Spelling Quiz — Week 1</div>
+        <div class="card-sub">Friday quiz · 20 words</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Spelling%20Week%202%20Quiz.html">
+      <span class="card-icon">🔡</span>
+      <div class="card-text">
+        <div class="card-title">Spelling Quiz — Week 2</div>
+        <div class="card-sub">Friday quiz · 20 words</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Spelling%20Week%203%20Quiz.html">
+      <span class="card-icon">🔡</span>
+      <div class="card-text">
+        <div class="card-title">Spelling Quiz — Week 3</div>
+        <div class="card-sub">Friday quiz · 20 words</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+
+    <div class="coming-soon">Grammar · Book Reports — added as they're built</div>
+  </div>
+</div>
+
+<footer>✈️ Kolten's Flight School · Summer 2026 Phase 1</footer>
 
 </body>
 </html>
