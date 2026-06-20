@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kolten's Flight School — Mission Hub</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0a0f1e;
+      color: #e8eaf0;
+      min-height: 100vh;
+      padding: 24px 16px 40px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    header .badge {
+      font-size: 48px;
+      display: block;
+      margin-bottom: 8px;
+    }
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+    header p {
+      margin-top: 6px;
+      font-size: 0.95rem;
+      color: #8892b0;
+    }
+    .section {
+      max-width: 600px;
+      margin: 0 auto 28px;
+    }
+    .section-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #5a7aad;
+      margin-bottom: 10px;
+      padding-left: 4px;
+    }
+    .grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    a.card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #111827;
+      border: 1px solid #1e2d45;
+      border-radius: 10px;
+      padding: 14px 16px;
+      text-decoration: none;
+      color: #e8eaf0;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+    a.card:hover {
+      background: #162033;
+      border-color: #3b6bb5;
+      transform: translateX(3px);
+    }
+    a.card:active {
+      transform: translateX(1px);
+    }
+    .card-icon {
+      font-size: 22px;
+      width: 36px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .card-text {
+      flex: 1;
+    }
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #e8eaf0;
+    }
+    .card-sub {
+      font-size: 0.78rem;
+      color: #5a7aad;
+      margin-top: 2px;
+    }
+    .card-arrow {
+      color: #3b6bb5;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    footer {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #3b4a6b;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="badge">✈️</span>
+  <h1>Kolten's Flight School</h1>
+  <p>Mission Hub — pick your briefing and launch</p>
+</header>
+
+<!-- ELA -->
+<div class="section">
+  <div class="section-title">📻 Radio Comms — ELA</div>
+  <div class="grid">
+    <a class="card" href="Authors%20Purpose%20Quiz.html">
+      <span class="card-icon">🎯</span>
+      <div class="card-text">
+        <div class="card-title">Author's Purpose Quiz</div>
+        <div class="card-sub">Persuade · Inform · Entertain — 12 questions</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Authors%20Purpose%20Sorter.html">
+      <span class="card-icon">🗂️</span>
+      <div class="card-text">
+        <div class="card-title">PIE Sorter</div>
+        <div class="card-sub">Sort passages by P · I · E</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Nouns%20Quiz.html">
+      <span class="card-icon">📝</span>
+      <div class="card-text">
+        <div class="card-title">Nouns Quiz</div>
+        <div class="card-sub">Identify nouns — 12 questions with hints</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Common%20vs%20Proper%20Nouns%20Sorter.html">
+      <span class="card-icon">🔤</span>
+      <div class="card-text">
+        <div class="card-title">Common vs Proper Nouns Sorter</div>
+        <div class="card-sub">Drag and sort by noun type</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Nouns%20Review%20Quiz.html">
+      <span class="card-icon">🏁</span>
+      <div class="card-text">
+        <div class="card-title">Nouns Review Quiz</div>
+        <div class="card-sub">Solo checkride — no hints · 12 questions</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Figurative%20Language%20Quiz.html">
+      <span class="card-icon">🎨</span>
+      <div class="card-text">
+        <div class="card-title">Figurative Language Quiz</div>
+        <div class="card-sub">Simile · Metaphor · Alliteration</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+  </div>
+</div>
+
+<!-- Math -->
+<div class="section">
+  <div class="section-title">🧭 Navigator Training — Math</div>
+  <div class="grid">
+    <a class="card" href="Multiplication%204s%20Quiz.html">
+      <span class="card-icon">✖️</span>
+      <div class="card-text">
+        <div class="card-title">Multiplication — 4s</div>
+        <div class="card-sub">Speed drill · 12 questions</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Multiplication%205s%20Quiz.html">
+      <span class="card-icon">✖️</span>
+      <div class="card-text">
+        <div class="card-title">Multiplication — 5s</div>
+        <div class="card-sub">Speed drill · 12 questions</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Multiplication%206s%20Quiz.html">
+      <span class="card-icon">✖️</span>
+      <div class="card-text">
+        <div class="card-title">Multiplication — 6s</div>
+        <div class="card-sub">Speed drill · 12 questions</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Multiplication%207s%20Quiz.html">
+      <span class="card-icon">✖️</span>
+      <div class="card-text">
+        <div class="card-title">Multiplication — 7s</div>
+        <div class="card-sub">Speed drill · 12 questions</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Multiplication%20Timer.html">
+      <span class="card-icon">⏱️</span>
+      <div class="card-text">
+        <div class="card-title">Multiplication Timer</div>
+        <div class="card-sub">Timed mixed drill</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+  </div>
+</div>
+
+<!-- History -->
+<div class="section">
+  <div class="section-title">📡 Intel Briefing — Biblical History</div>
+  <div class="grid">
+    <a class="card" href="Genesis%201%20Quiz.html">
+      <span class="card-icon">📖</span>
+      <div class="card-text">
+        <div class="card-title">Genesis 1 Quiz</div>
+        <div class="card-sub">Creation — Day 1 through 7</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Genesis%202%20Quiz.html">
+      <span class="card-icon">📖</span>
+      <div class="card-text">
+        <div class="card-title">Genesis 2 Quiz</div>
+        <div class="card-sub">Adam, Eden, and Eve</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Genesis%203%20Quiz.html">
+      <span class="card-icon">📖</span>
+      <div class="card-text">
+        <div class="card-title">Genesis 3 Quiz</div>
+        <div class="card-sub">The Fall</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Genesis%20Timeline%20Quiz.html">
+      <span class="card-icon">🗺️</span>
+      <div class="card-text">
+        <div class="card-title">Genesis Timeline Quiz</div>
+        <div class="card-sub">Structure and toledot</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Genesis%204%20Quiz.html">
+      <span class="card-icon">📖</span>
+      <div class="card-text">
+        <div class="card-title">Genesis 4 Quiz</div>
+        <div class="card-sub">Cain and Abel</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Genesis%205-6%20Quiz.html">
+      <span class="card-icon">📖</span>
+      <div class="card-text">
+        <div class="card-title">Genesis 5–6 Quiz</div>
+        <div class="card-sub">Genealogy + Noah's calling</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Genesis%207-8%20Quiz.html">
+      <span class="card-icon">📖</span>
+      <div class="card-text">
+        <div class="card-title">Genesis 7–8 Quiz</div>
+        <div class="card-sub">The Flood</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+    <a class="card" href="Genesis%209%20Quiz.html">
+      <span class="card-icon">📖</span>
+      <div class="card-text">
+        <div class="card-title">Genesis 9 Quiz</div>
+        <div class="card-sub">The Rainbow Covenant</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+  </div>
+</div>
+
+<footer>
+  ✈️ Kolten's Flight School · Summer 2026
+</footer>
+
+</body>
+</html>
